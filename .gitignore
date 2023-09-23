@@ -1,0 +1,16 @@
+﻿# IDE
+.idea
+.vs
+
+# .NET Core build folders
+bin/
+obj/
+
+# Javascript
+node_modules/
+
+# appsettings
+appsettings.local.json
+
+# user
+*./user
