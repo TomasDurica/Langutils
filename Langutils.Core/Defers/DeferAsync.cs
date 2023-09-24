@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Langutils.Core.Defers;
+﻿namespace Langutils.Core.Defers;
 
 public readonly struct DeferAsync : IAsyncDisposable
 {

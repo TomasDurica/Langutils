@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Langutils.Core.Defers;
+﻿namespace Langutils.Core.Defers;
 
 public readonly struct DeferWith<TContext> : IDisposable
 {
