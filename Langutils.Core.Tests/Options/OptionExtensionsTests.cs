@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Langutils.Core.Options;
 using Langutils.Core.Results;
 using Langutils.Core.Tests.Asserts;
@@ -76,6 +73,18 @@ public class OptionExtensionsTests
         Assert.False(result);
         Assert.Same(default, unwrappedValue);
     }
+
+    [Fact]
+    public void Unwrap_OnSome_ShouldReturnValue()
+    {
+        var result = Some.Unwrap();
+
+        Assert.Equal(Value, result);
+    }
+
+    [Fact]
+    public void Unwrap_OnNone_ShouldThrow()
+        => Assert.Throws<InvalidOperationException>(() => None.Unwrap());
 
     [Fact]
     public void UnwrapOr_OnSome_ReturnsValue()

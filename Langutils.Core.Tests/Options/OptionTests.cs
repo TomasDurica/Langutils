@@ -27,18 +27,6 @@ public class OptionTests
         => Assert.True(None.IsNone);
 
     [Fact]
-    public void Unwrap_OnSome_ShouldReturnValue()
-    {
-        var result = Some.Unwrap();
-
-        Assert.Equal(Value, result);
-    }
-
-    [Fact]
-    public void Unwrap_OnNone_ShouldThrow()
-        => Assert.Throws<InvalidOperationException>(() => None.Unwrap());
-
-    [Fact]
     public void ImplicitCast_NotNull_ReturnsSome()
     {
         var value = new object();

@@ -47,4 +47,9 @@ public readonly record struct Result<TValue, TError>
 
     public static implicit operator Result<TValue, TError>(TError value)
         => new(value);
+
+    public override string ToString()
+        => IsSuccess
+            ? $"Result.Success({Value})"
+            : $"Result.Error({Error})";
 }

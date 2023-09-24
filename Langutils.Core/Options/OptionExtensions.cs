@@ -18,6 +18,12 @@ public static class OptionExtensions
         _ => throw new InvalidOperationException(message)
     };
 
+    public static TValue Unwrap<TValue>(this Option<TValue> self) => self switch
+    {
+        { IsSome: true, Value: var value } => value,
+        _ => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Option.None)}` value")
+    };
+
     public static bool TryUnwrap<TValue>(this Option<TValue> self, [NotNullWhen(true)] out TValue? value)
     {
         if (self is { IsSome: true, Value: var innerValue })

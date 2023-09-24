@@ -32,12 +32,6 @@ public readonly record struct Option<TValue>
         Value = value;
     }
 
-    public TValue Unwrap() => this switch
-    {
-        { IsSome: true, Value: var value } => value,
-        _ => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Option.None)}` value")
-    };
-
     public static implicit operator Option<TValue>(TValue? value) => value switch
     {
         not null => new Option<TValue>(value),
@@ -45,4 +39,9 @@ public readonly record struct Option<TValue>
     };
 
     public static implicit operator Option<TValue>(None _) => new();
+
+    public override string ToString()
+        => IsSome
+            ? $"Option.Some({Value})"
+            : "Option.None";
 }
