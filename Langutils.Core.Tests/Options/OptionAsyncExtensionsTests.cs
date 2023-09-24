@@ -94,108 +94,84 @@ public class OptionAsyncExtensionsTests
     }
 
     [Fact]
-    public async Task WhereAsync_OnSome_WhenMatchesPredicate_ReturnsSome()
+    public async Task FilterAsync_OnSome_WhenMatchesPredicate_ReturnsSome()
     {
-        var result = await Some.WhereAsync(v => Task.FromResult(v == Value));
+        var result = await Some.FilterAsync(v => Task.FromResult(v == Value));
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task WhereAsync_OnSome_WhenDoesNotMatchPredicate_ReturnsNone()
+    public async Task FilterAsync_OnSome_WhenDoesNotMatchPredicate_ReturnsNone()
     {
-        var result = await Some.WhereAsync(v => Task.FromResult(v != Value));
+        var result = await Some.FilterAsync(v => Task.FromResult(v != Value));
 
         AssertOption.None(result);
     }
 
     [Fact]
-    public async Task WhereAsync_OnNone_ReturnsNone()
+    public async Task FilterAsync_OnNone_ReturnsNone()
     {
-        var result = await None.WhereAsync(_ => Task.FromResult(true));
+        var result = await None.FilterAsync(_ => Task.FromResult(true));
 
         AssertOption.None(result);
     }
 
     [Fact]
-    public async Task SelectManyAsync_OnSome_WhenSelectorReturnsSome_ReturnsSome()
+    public async Task MapAsync_OnSome_ReturnsSome()
     {
-        var result = await Some.SelectManyAsync(v => Task.FromResult(Option.Some(v)));
+        var result = await Some.MapAsync(Task.FromResult);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task SelectManyAsync_OnSome_WhenSelectorReturnsNone_ReturnsNone()
+    public async Task MapAsync_OnNone_ReturnsNone()
     {
-        var result = await Some.SelectManyAsync(_ => TaskNone);
+        var result = await None.MapAsync(Task.FromResult);
 
         AssertOption.None(result);
     }
 
     [Fact]
-    public async Task SelectManyAsync_OnNone_ReturnsNone()
+    public async Task MapOrAsync_OnSome_ReturnsSome()
     {
-        var result = await None.SelectManyAsync(_ => TaskSome);
-
-        AssertOption.None(result);
-    }
-
-    [Fact]
-    public async Task SelectAsync_OnSome_ReturnsSome()
-    {
-        var result = await Some.SelectAsync(Task.FromResult);
+        var result = await Some.MapOrAsync(OtherValue, Task.FromResult);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task SelectAsync_OnNone_ReturnsNone()
+    public async Task MapOrAsync_OnNone_ReturnsDefaultValue()
     {
-        var result = await None.SelectAsync(Task.FromResult);
-
-        AssertOption.None(result);
-    }
-
-    [Fact]
-    public async Task SelectOrAsync_OnSome_ReturnsSome()
-    {
-        var result = await Some.SelectOrAsync(OtherValue, Task.FromResult);
-
-        AssertOption.Some(Value, result);
-    }
-
-    [Fact]
-    public async Task SelectOrAsync_OnNone_ReturnsDefaultValue()
-    {
-        var result = await None.SelectOrAsync(OtherValue, Task.FromResult);
+        var result = await None.MapOrAsync(OtherValue, Task.FromResult);
 
         AssertOption.Some(OtherValue, result);
     }
 
     [Fact]
-    public async Task SelectOrElseAsync_OnSome_ReturnsSome()
+    public async Task MapOrElseAsync_OnSome_ReturnsSome()
     {
-        var result = await Some.SelectOrElseAsync(() => OtherValue, Task.FromResult);
+        var result = await Some.MapOrElseAsync(() => OtherValue, Task.FromResult);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task SelectOrElseAsync_OnSome_DoesNotCallDefaultValueProvider()
+    public async Task MapOrElseAsync_OnSome_DoesNotCallDefaultValueProvider()
     {
         var defaultValueProvider = Substitute.For<Func<object>>();
         defaultValueProvider.Invoke().Returns(OtherValue);
 
-        await Some.SelectOrElseAsync(defaultValueProvider, Task.FromResult);
+        await Some.MapOrElseAsync(defaultValueProvider, Task.FromResult);
 
         Assert.Empty(defaultValueProvider.ReceivedCalls());
     }
 
     [Fact]
-    public async Task SelectOrElseAsync_OnNone_ReturnsDefaultValue()
+    public async Task MapOrElseAsync_OnNone_ReturnsDefaultValue()
     {
-        var result = await None.SelectOrElseAsync(() => Value, Task.FromResult);
+        var result = await None.MapOrElseAsync(() => Value, Task.FromResult);
 
         AssertOption.Some(Value, result);
     }
@@ -230,7 +206,7 @@ public class OptionAsyncExtensionsTests
     [Fact]
     public async Task AndThenAsync_OnSomeSome_ReturnsSomeWithRightValue()
     {
-        var result = await Some.AndThenAsync(() => TaskOtherSome);
+        var result = await Some.AndThenAsync(_ => TaskOtherSome);
 
         AssertOption.Equal(OtherSome, result);
     }
@@ -238,7 +214,7 @@ public class OptionAsyncExtensionsTests
     [Fact]
     public async Task AndThenAsync_OnSomeNone_ReturnsNone()
     {
-        var result = await Some.AndThenAsync(() => TaskNone);
+        var result = await Some.AndThenAsync(_ => TaskNone);
 
         AssertOption.None(result);
     }
@@ -246,7 +222,7 @@ public class OptionAsyncExtensionsTests
     [Fact]
     public async Task AndThenAsync_OnNoneSome_ReturnsNone()
     {
-        var result = await None.AndThenAsync(() => TaskSome);
+        var result = await None.AndThenAsync(_ => TaskSome);
 
         AssertOption.None(result);
     }
@@ -254,7 +230,7 @@ public class OptionAsyncExtensionsTests
     [Fact]
     public async Task AndThenAsync_OnNoneNone_ReturnsNone()
     {
-        var result = await None.AndThenAsync(() => TaskNone);
+        var result = await None.AndThenAsync(_ => TaskNone);
 
         AssertOption.None(result);
     }
@@ -262,8 +238,8 @@ public class OptionAsyncExtensionsTests
     [Fact]
     public async Task AndThenAsync_OnNone_DoesNotCallOptionProvider()
     {
-        var optionProvider = Substitute.For<Func<Task<Option<object>>>>();
-        optionProvider.Invoke().Returns(Some);
+        var optionProvider = Substitute.For<Func<object, Task<Option<object>>>>();
+        optionProvider.Invoke(Arg.Any<object>()).Returns(Some);
 
         await None.AndThenAsync(optionProvider);
 

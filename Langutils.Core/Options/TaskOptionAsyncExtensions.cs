@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Langutils.Core.Results;
+﻿using Langutils.Core.Results;
 
 namespace Langutils.Core.Options;
 
@@ -15,25 +13,22 @@ public static class TaskOptionAsyncExtensions
     public static async Task<Option<TValue>> TapAsync<TValue>(this Task<Option<TValue>> self, Func<TValue, Task> onSome)
         => await (await self).TapAsync(onSome).ConfigureAwait(false);
 
-    public static async Task<Option<TValue>> WhereAsync<TValue>(this Task<Option<TValue>> self, Func<TValue, Task<bool>> predicate)
-        => await (await self).WhereAsync(predicate).ConfigureAwait(false);
+    public static async Task<Option<TValue>> FilterAsync<TValue>(this Task<Option<TValue>> self, Func<TValue, Task<bool>> predicate)
+        => await (await self).FilterAsync(predicate).ConfigureAwait(false);
 
-    public static async Task<Option<TOut>> SelectManyAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, Task<Option<TOut>>> selector)
-        => await (await self).SelectManyAsync(selector).ConfigureAwait(false);
+    public static async Task<Option<TOut>> MapAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, Task<TOut>> selector)
+        => await (await self).MapAsync(selector).ConfigureAwait(false);
 
-    public static async Task<Option<TOut>> SelectAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, Task<TOut>> selector)
-        => await (await self).SelectAsync(selector).ConfigureAwait(false);
+    public static async Task<TOut> MapOrAsync<TIn, TOut>(this Task<Option<TIn>> self, TOut defaultValue, Func<TIn, Task<TOut>> selector)
+        => await (await self).MapOrAsync(defaultValue, selector).ConfigureAwait(false);
 
-    public static async Task<TOut> SelectOrAsync<TIn, TOut>(this Task<Option<TIn>> self, TOut defaultValue, Func<TIn, Task<TOut>> selector)
-        => await (await self).SelectOrAsync(defaultValue, selector).ConfigureAwait(false);
-
-    public static async Task<TOut> SelectOrElseAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
-        => await (await self).SelectOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+        => await (await self).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
 
     public static async Task<Result<TValue, TError>> SomeOrElseAsync<TValue, TError>(this Task<Option<TValue>> self, Func<Task<TError>> errorProvider)
         => await (await self).SomeOrElseAsync(errorProvider).ConfigureAwait(false);
 
-    public static async Task<Option<TValue>> AndThenAsync<TValue>(this Task<Option<TValue>> self, Func<Task<Option<TValue>>> optionProvider)
+    public static async Task<Option<TOut>> AndThenAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, Task<Option<TOut>>> optionProvider)
         => await (await self).AndThenAsync(optionProvider).ConfigureAwait(false);
 
     public static async Task<Option<TValue>> OrElseAsync<TValue>(this Task<Option<TValue>> self, Func<Task<Option<TValue>>> optionProvider)

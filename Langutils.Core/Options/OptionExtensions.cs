@@ -58,37 +58,25 @@ public static class OptionExtensions
         return self;
     }
 
-    public static Option<TValue> Where<TValue>(this Option<TValue> self, Func<TValue, bool> predicate) => self switch
+    public static Option<TValue> Filter<TValue>(this Option<TValue> self, Func<TValue, bool> predicate) => self switch
     {
         { IsSome: true, Value: var value } when predicate(value) => self,
         _ => None.Instance
     };
 
-    public static Option<TOut> SelectMany<TIn, TOut>(this Option<TIn> self, Func<TIn, Option<TOut>> selector) => self switch
+    public static Option<TOut> Map<TIn, TOut>(this Option<TIn> self, Func<TIn, TOut> selector) => self switch
     {
         { IsSome: true, Value: var value } => selector(value),
         _ => None.Instance
     };
 
-    public static Option<TValue> Flatten<TValue>(this Option<Option<TValue>> self) => self switch
-    {
-        { IsSome: true, Value: var option} => option,
-        _ => None.Instance
-    };
-
-    public static Option<TOut> Select<TIn, TOut>(this Option<TIn> self, Func<TIn, TOut> selector) => self switch
-    {
-        { IsSome: true, Value: var value } => selector(value),
-        _ => None.Instance
-    };
-
-    public static TOut SelectOr<TIn, TOut>(this Option<TIn> self, TOut defaultValue, Func<TIn, TOut> selector) => self switch
+    public static TOut MapOr<TIn, TOut>(this Option<TIn> self, TOut defaultValue, Func<TIn, TOut> selector) => self switch
     {
         { IsSome: true, Value: var value } => selector(value),
         _ => defaultValue
     };
 
-    public static TOut SelectOrElse<TIn, TOut>(this Option<TIn> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector) => self switch
+    public static TOut MapOrElse<TIn, TOut>(this Option<TIn> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector) => self switch
     {
         { IsSome: true, Value: var value } => selector(value),
         _ => defaultValueProvider()
@@ -113,34 +101,22 @@ public static class OptionExtensions
         _ => Option.None<TValue>()
     };
 
-    public static IEnumerable<TValue> AsEnumerable<TValue>(this Option<TValue> self) => self switch
+    public static Option<TValue> Flatten<TValue>(this Option<Option<TValue>> self) => self switch
     {
-        { IsSome: true, Value: var value } => new [] { value },
-        _ => Enumerable.Empty<TValue>()
+        { IsSome: true, Value: var option} => option,
+        _ => None.Instance
     };
 
-    public static List<TValue> ToList<TValue>(this Option<TValue> self) => self switch
-    {
-        { IsSome: true, Value: var value } => new List<TValue> { value },
-        _ => new List<TValue>()
-    };
-
-    public static TValue[] ToArray<TValue>(this Option<TValue> self) => self switch
-    {
-        { IsSome: true, Value: var value } => new [] { value },
-        _ => Array.Empty<TValue>()
-    };
-
-    public static Option<TValue> And<TValue>(this Option<TValue> self, Option<TValue> option) => self switch
+    public static Option<TOut> And<TIn, TOut>(this Option<TIn> self, Option<TOut> option) => self switch
     {
         { IsSome: true } => option,
-        _ => self
+        _ => None.Instance
     };
 
-    public static Option<TValue> AndThen<TValue>(this Option<TValue> self, Func<Option<TValue>> optionProvider) => self switch
+    public static Option<TOut> AndThen<TIn, TOut>(this Option<TIn> self, Func<TIn, Option<TOut>> optionProvider) => self switch
     {
-        { IsSome: true } => optionProvider(),
-        _ => self
+        { IsSome: true, Value: var value } => optionProvider(value),
+        _ => None.Instance
     };
 
     public static Option<TValue> Or<TValue>(this Option<TValue> self, Option<TValue> option) => self switch
@@ -186,6 +162,24 @@ public static class OptionExtensions
         ({ IsSome: false }, { IsSome: true }) => -1,
         ({ IsSome: true }, { IsSome: false }) => 1,
         ({ Value: var left }, { Value: var right }) => left!.CompareTo(right!)
+    };
+
+    public static IEnumerable<TValue> AsEnumerable<TValue>(this Option<TValue> self) => self switch
+    {
+        { IsSome: true, Value: var value } => new [] { value },
+        _ => Enumerable.Empty<TValue>()
+    };
+
+    public static List<TValue> ToList<TValue>(this Option<TValue> self) => self switch
+    {
+        { IsSome: true, Value: var value } => new List<TValue> { value },
+        _ => new List<TValue>()
+    };
+
+    public static TValue[] ToArray<TValue>(this Option<TValue> self) => self switch
+    {
+        { IsSome: true, Value: var value } => new [] { value },
+        _ => Array.Empty<TValue>()
     };
 
     public static Option<List<TValue>> Collect<TValue>(this List<Option<TValue>> options)
@@ -247,19 +241,65 @@ public static class OptionExtensions
         return Option.Some(result.AsEnumerable());
     }
 
+    public static Option<TValue> Aggregate<TValue>(this IEnumerable<Option<TValue>> options, Func<TValue, TValue, TValue> selector)
+    {
+        var hasValue = false;
+        var result = default(TValue);
+
+        foreach (var option in options)
+        {
+            switch (option)
+            {
+                case { IsSome: true, Value: var value } when !hasValue:
+                    result = value;
+                    hasValue = true;
+                    break;
+                case { IsSome: true, Value: var value }:
+                    result = selector(result!, value);
+                    break;
+                default:
+                    return None.Instance;
+            }
+        }
+
+        return hasValue
+            ? result
+            : throw new InvalidOperationException("Sequence contains no elements");
+    }
+
+    public static Option<TOut> Aggregate<TIn, TOut>(this IEnumerable<Option<TIn>> options, TOut seed, Func<TOut, TIn, TOut> selector)
+    {
+        var result = seed;
+
+        foreach (var option in options)
+        {
+            switch (option)
+            {
+                case { IsSome: true, Value: var value }:
+                    result = selector(result, value);
+                    break;
+                default:
+                    return None.Instance;
+            }
+        }
+
+        return result;
+    }
+
     public static Option<TValue> Sum<TValue>(this IEnumerable<Option<TValue>> options)
         where TValue : INumber<TValue>
     {
         var sum = TValue.Zero;
+
         foreach (var option in options)
         {
-            if (option is { IsSome: true, Value: var value })
+            switch (option)
             {
-                sum += value;
-            }
-            else
-            {
-                return None.Instance;
+                case { IsSome: true, Value: var value }:
+                    sum += value;
+                    break;
+                default:
+                    return None.Instance;
             }
         }
 
@@ -269,19 +309,20 @@ public static class OptionExtensions
     public static Option<TValue> Product<TValue>(this IEnumerable<Option<TValue>> options)
         where TValue : INumber<TValue>
     {
-        var sum = TValue.One;
+        var product = TValue.One;
+
         foreach (var option in options)
         {
-            if (option is { IsSome: true, Value: var value })
+            switch (option)
             {
-                sum *= value;
-            }
-            else
-            {
-                return None.Instance;
+                case { IsSome: true, Value: var value }:
+                    product *= value;
+                    break;
+                default:
+                    return None.Instance;
             }
         }
 
-        return sum;
+        return product;
     }
 }

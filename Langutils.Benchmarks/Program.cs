@@ -1,6 +1,3 @@
-﻿using System;
-using Langutils.Core.Results;
+﻿using BenchmarkDotNet.Running;
 
-// BenchmarkRunner.Run<PatternBenchmarks>();
-
-Console.WriteLine("");
+BenchmarkRunner.Run<AggregateBenchmarks>();

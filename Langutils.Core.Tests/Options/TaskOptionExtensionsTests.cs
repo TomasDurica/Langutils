@@ -144,49 +144,25 @@ public class TaskOptionExtensionsTests
     }
 
     [Fact]
-    public async Task Where_OnSome_WhenMatchesPredicate_ReturnsSome()
+    public async Task Filter_OnSome_WhenMatchesPredicate_ReturnsSome()
     {
-        var result = await TaskSome.Where(v => v == Value);
+        var result = await TaskSome.Filter(v => v == Value);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task Where_OnSome_WhenDoesNotMatchPredicate_ReturnsNone()
+    public async Task Filter_OnSome_WhenDoesNotMatchPredicate_ReturnsNone()
     {
-        var result = await TaskSome.Where(v => v != Value);
+        var result = await TaskSome.Filter(v => v != Value);
 
         AssertOption.None(result);
     }
 
     [Fact]
-    public async Task Where_OnNone_ReturnsNone()
+    public async Task Filter_OnNone_ReturnsNone()
     {
-        var result = await TaskNone.Where(_ => true);
-
-        AssertOption.None(result);
-    }
-
-    [Fact]
-    public async Task SelectMany_OnSome_WhenSelectorReturnsSome_ReturnsSome()
-    {
-        var result = await TaskSome.SelectMany(Option.Some);
-
-        AssertOption.Some(Value, result);
-    }
-
-    [Fact]
-    public async Task SelectMany_OnSome_WhenSelectorReturnsNone_ReturnsNone()
-    {
-        var result = await TaskSome.SelectMany(_ => None);
-
-        AssertOption.None(result);
-    }
-
-    [Fact]
-    public async Task SelectMany_OnNone_ReturnsNone()
-    {
-        var result = await TaskNone.SelectMany(_ => Some);
+        var result = await TaskNone.Filter(_ => true);
 
         AssertOption.None(result);
     }
@@ -216,60 +192,60 @@ public class TaskOptionExtensionsTests
     }
 
     [Fact]
-    public async Task Select_OnSome_ReturnsSome()
+    public async Task Map_OnSome_ReturnsSome()
     {
-        var result = await TaskSome.Select(v => v);
+        var result = await TaskSome.Map(v => v);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task Select_OnNone_ReturnsNone()
+    public async Task Map_OnNone_ReturnsNone()
     {
-        var result = await TaskNone.Select(v => v);
+        var result = await TaskNone.Map(v => v);
 
         AssertOption.None(result);
     }
 
     [Fact]
-    public async Task SelectOr_OnSome_ReturnsSome()
+    public async Task MapOr_OnSome_ReturnsSome()
     {
-        var result = await TaskSome.SelectOr(OtherValue, v => v);
+        var result = await TaskSome.MapOr(OtherValue, v => v);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task SelectOr_OnNone_ReturnsDefaultValue()
+    public async Task MapOr_OnNone_ReturnsDefaultValue()
     {
-        var result = await TaskNone.SelectOr(OtherValue, v => v);
+        var result = await TaskNone.MapOr(OtherValue, v => v);
 
         AssertOption.Some(OtherValue, result);
     }
 
     [Fact]
-    public async Task SelectOrElse_OnSome_ReturnsSome()
+    public async Task MapOrElse_OnSome_ReturnsSome()
     {
-        var result = await TaskSome.SelectOrElse(() => OtherValue, v => v);
+        var result = await TaskSome.MapOrElse(() => OtherValue, v => v);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public async Task SelectOrElse_OnSome_DoesNotCallDefaultValueProvider()
+    public async Task MapOrElse_OnSome_DoesNotCallDefaultValueProvider()
     {
         var defaultValueProvider = Substitute.For<Func<object>>();
         defaultValueProvider.Invoke().Returns(OtherValue);
 
-        await TaskSome.SelectOrElse(defaultValueProvider, v => v);
+        await TaskSome.MapOrElse(defaultValueProvider, v => v);
 
         Assert.Empty(defaultValueProvider.ReceivedCalls());
     }
 
     [Fact]
-    public async Task SelectOrElse_OnNone_ReturnsDefaultValue()
+    public async Task MapOrElse_OnNone_ReturnsDefaultValue()
     {
-        var result = await TaskNone.SelectOrElse(() => Value, v => v);
+        var result = await TaskNone.MapOrElse(() => Value, v => v);
 
         AssertOption.Some(Value, result);
     }
@@ -424,7 +400,7 @@ public class TaskOptionExtensionsTests
     [Fact]
     public async Task AndThen_OnSomeSome_ReturnsSomeWithRightValue()
     {
-        var result = await TaskSome.AndThen(() => OtherSome);
+        var result = await TaskSome.AndThen(_ => OtherSome);
 
         AssertOption.Equal(OtherSome, result);
     }
@@ -432,7 +408,7 @@ public class TaskOptionExtensionsTests
     [Fact]
     public async Task AndThen_OnSomeNone_ReturnsNone()
     {
-        var result = await TaskSome.AndThen(() => None);
+        var result = await TaskSome.AndThen(_ => None);
 
         AssertOption.None(result);
     }
@@ -440,7 +416,7 @@ public class TaskOptionExtensionsTests
     [Fact]
     public async Task AndThen_OnNoneSome_ReturnsNone()
     {
-        var result = await TaskNone.AndThen(() => Some);
+        var result = await TaskNone.AndThen(_ => Some);
 
         AssertOption.None(result);
     }
@@ -448,7 +424,7 @@ public class TaskOptionExtensionsTests
     [Fact]
     public async Task AndThen_OnNoneNone_ReturnsNone()
     {
-        var result = await TaskNone.AndThen(() => None);
+        var result = await TaskNone.AndThen(_ => None);
 
         AssertOption.None(result);
     }
@@ -456,8 +432,8 @@ public class TaskOptionExtensionsTests
     [Fact]
     public async Task AndThen_OnNone_DoesNotCallOptionProvider()
     {
-        var optionProvider = Substitute.For<Func<Option<object>>>();
-        optionProvider.Invoke().Returns(TaskSome);
+        var optionProvider = Substitute.For<Func<object, Option<object>>>();
+        optionProvider.Invoke(Arg.Any<object>()).Returns(TaskSome);
 
         await TaskNone.AndThen(optionProvider);
 

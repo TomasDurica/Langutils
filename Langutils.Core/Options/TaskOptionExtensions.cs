@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Langutils.Core.Results;
+﻿using Langutils.Core.Results;
 
 namespace Langutils.Core.Options;
 
@@ -28,23 +25,20 @@ public static class TaskOptionExtensions
     public static async Task<Option<TValue>> Tap<TValue>(this Task<Option<TValue>> self, Action<TValue> onSome)
         => (await self).Tap(onSome);
 
-    public static async Task<Option<TValue>> Where<TValue>(this Task<Option<TValue>> self, Func<TValue, bool> predicate)
-        => (await self).Where(predicate);
-
-    public static async Task<Option<TOut>> SelectMany<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, Option<TOut>> selector)
-        => (await self).SelectMany(selector);
+    public static async Task<Option<TValue>> Filter<TValue>(this Task<Option<TValue>> self, Func<TValue, bool> predicate)
+        => (await self).Filter(predicate);
 
     public static async Task<Option<TValue>> Flatten<TValue>(this Task<Option<Option<TValue>>> self)
         => (await self).Flatten();
 
-    public static async Task<Option<TOut>> Select<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, TOut> selector)
-        => (await self).Select(selector);
+    public static async Task<Option<TOut>> Map<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, TOut> selector)
+        => (await self).Map(selector);
 
-    public static async Task<TOut> SelectOr<TIn, TOut>(this Task<Option<TIn>> self, TOut defaultValue, Func<TIn, TOut> selector)
-        => (await self).SelectOr(defaultValue, selector);
+    public static async Task<TOut> MapOr<TIn, TOut>(this Task<Option<TIn>> self, TOut defaultValue, Func<TIn, TOut> selector)
+        => (await self).MapOr(defaultValue, selector);
 
-    public static async Task<TOut> SelectOrElse<TIn, TOut>(this Task<Option<TIn>> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector)
-        => (await self).SelectOrElse(defaultValueProvider, selector);
+    public static async Task<TOut> MapOrElse<TIn, TOut>(this Task<Option<TIn>> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector)
+        => (await self).MapOrElse(defaultValueProvider, selector);
 
     public static async Task<Result<TValue, TError>> SomeOr<TValue, TError>(this Task<Option<TValue>> self, TError error)
         => (await self).SomeOr(error);
@@ -64,10 +58,10 @@ public static class TaskOptionExtensions
     public static async Task<TValue[]> ToArray<TValue>(this Task<Option<TValue>> self)
         => (await self).ToArray();
 
-    public static async Task<Option<TValue>> And<TValue>(this Task<Option<TValue>> self, Option<TValue> option)
+    public static async Task<Option<TOut>> And<TIn, TOut>(this Task<Option<TIn>> self, Option<TOut> option)
         => (await self).And(option);
 
-    public static async Task<Option<TValue>> AndThen<TValue>(this Task<Option<TValue>> self, Func<Option<TValue>> optionProvider)
+    public static async Task<Option<TOut>> AndThen<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, Option<TOut>> optionProvider)
         => (await self).AndThen(optionProvider);
 
     public static async Task<Option<TValue>> Or<TValue>(this Task<Option<TValue>> self, Option<TValue> option)
@@ -79,13 +73,13 @@ public static class TaskOptionExtensions
     public static async Task<Option<TValue>> Xor<TValue>(this Task<Option<TValue>> self, Option<TValue> option)
         => (await self).Xor(option);
 
-    public static async Task<Option<(TValue1 Left, TValue2 Right)>> Zip<TValue1, TValue2>(this Task<Option<TValue1>> self, Option<TValue2> option)
+    public static async Task<Option<(TLeft Left, TRight Right)>> Zip<TLeft, TRight>(this Task<Option<TLeft>> self, Option<TRight> option)
         => (await self).Zip(option);
 
-    public static async Task<Option<TOut>> ZipWith<TIn1, TIn2, TOut>(this Task<Option<TIn1>> self, Option<TIn2> option, Func<TIn1, TIn2, TOut> selector)
+    public static async Task<Option<TOut>> ZipWith<TLeft, TRight, TOut>(this Task<Option<TLeft>> self, Option<TRight> option, Func<TLeft, TRight, TOut> selector)
         => (await self).ZipWith(option, selector);
 
-    public static async Task<(Option<TValue1> Left, Option<TValue2> Right)> Unzip<TValue1, TValue2>(this Task<Option<(TValue1 Left, TValue2 Right)>> self)
+    public static async Task<(Option<TLeft> Left, Option<TRight> Right)> Unzip<TLeft, TRight>(this Task<Option<(TLeft Left, TRight Right)>> self)
         => (await self).Unzip();
 
     public static async Task<Option<List<TValue>>> Collect<TValue>(this Task<List<Option<TValue>>> options)

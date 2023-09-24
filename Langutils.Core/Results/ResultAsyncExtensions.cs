@@ -43,66 +43,59 @@ public static class ResultAsyncExtensions
         return self;
     }
 
-    public static async Task<Result<TOut, TError>> SelectManyAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TIn, Task<Result<TOut, TError>>> selector)
+    public static async Task<Result<TOut, TError>> MapAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TIn, Task<TOut>> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => await selector(value).ConfigureAwait(false),
             { Error: var error } => error!
         };
 
-    public static async Task<Result<TOut, TError>> SelectAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TIn, Task<TOut>> selector)
-        => self switch
-        {
-            { IsSuccess: true, Value: var value } => await selector(value).ConfigureAwait(false),
-            { Error: var error } => error!
-        };
-
-    public static async Task<Result<TValue, TOut>> SelectErrorAsync<TValue, TIn, TOut>(this Result<TValue, TIn> self, Func<TIn?, Task<TOut>> selector)
+    public static async Task<Result<TValue, TOut>> MapErrorAsync<TValue, TIn, TOut>(this Result<TValue, TIn> self, Func<TIn?, Task<TOut>> selector)
         => self switch
         {
             { IsError: true, Error: var error } => await selector(error).ConfigureAwait(false),
             { Value: var value } => value
         };
 
-    public static async Task<TOut> SelectOrAsync<TIn, TOut, TError>(this Result<TIn, TError> self, TOut defaultValue, Func<TIn, Task<TOut>> selector)
+    public static async Task<TOut> MapOrAsync<TIn, TOut, TError>(this Result<TIn, TError> self, TOut defaultValue, Func<TIn, Task<TOut>> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => await selector(value).ConfigureAwait(false),
             _ => defaultValue
         };
 
-    public static async Task<TOut> SelectOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => await selector(value).ConfigureAwait(false),
             _ => defaultValueProvider()
         };
 
-    public static async Task<TOut> SelectOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => selector(value),
             _ => await defaultValueProvider().ConfigureAwait(false)
         };
 
-    public static async Task<TOut> SelectOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => await selector(value).ConfigureAwait(false),
             _ => await defaultValueProvider().ConfigureAwait(false)
         };
 
-    public static async Task<Result<TValue, TError>> AndThenAsync<TValue, TError>(this Result<TValue, TError> self, Func<Task<Result<TValue, TError>>> optionProvider)
+    public static async Task<Result<TOut, TError>> AndThenAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TIn, Task<Result<TOut, TError>>> optionProvider)
         => self switch
         {
-            { IsSuccess: true } => await optionProvider().ConfigureAwait(false),
-            _ => self
+            { IsSuccess: true, Value: var value} => await optionProvider(value).ConfigureAwait(false),
+            { Error: var error } => error!
         };
 
-    public static async Task<Result<TValue, TError>> OrElseAsync<TValue, TError>(this Result<TValue, TError> self, Func<Task<Result<TValue, TError>>> optionProvider)
+    public static async Task<Result<TValue, TOut>> OrElseAsync<TValue, TIn, TOut>(this Result<TValue, TIn> self, Func<TIn?, Task<Result<TValue, TOut>>> optionProvider)
         => self switch
         {
-            { IsSuccess: true } => self,
-            _ => await optionProvider().ConfigureAwait(false)
+            { IsSuccess: true, Value: var value } => value,
+            { Error: var error } => await optionProvider(error).ConfigureAwait(false)
         };
 }

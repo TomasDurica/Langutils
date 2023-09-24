@@ -275,30 +275,6 @@ public class TaskResultExtensionsTests
     }
 
     [Fact]
-    public async Task SelectMany_OnSuccessSuccess_ReturnsSuccess()
-    {
-        var result = await TaskSuccess.SelectMany(_ => OtherSuccess);
-
-        AssertResult.Success(OtherValue, result);
-    }
-
-    [Fact]
-    public async Task SelectMany_OnSuccessError_ReturnsError()
-    {
-        var result = await TaskSuccess.SelectMany(_ => Error);
-
-        AssertResult.Error(ErrorMessage, result);
-    }
-
-    [Fact]
-    public async Task SelectMany_OnError_ReturnsError()
-    {
-        var result = await TaskError.SelectMany(_ => Success);
-
-        AssertResult.Error(ErrorMessage, result);
-    }
-
-    [Fact]
     public async Task Flatten_OnSuccessSuccess_ReturnsSuccess()
     {
         var result = await Task.FromResult(Result.Success<Result<object, object>, object>(Success))
@@ -326,76 +302,76 @@ public class TaskResultExtensionsTests
     }
 
     [Fact]
-    public async Task Select_OnSuccess_ReturnsSuccess()
+    public async Task Map_OnSuccess_ReturnsSuccess()
     {
-        var result = await TaskSuccess.Select(Result.Success);
+        var result = await TaskSuccess.Map(Result.Success);
 
         AssertResult.Success(Value, result);
     }
 
     [Fact]
-    public async Task Select_OnError_ReturnsError()
+    public async Task Map_OnError_ReturnsError()
     {
-        var result = await TaskError.Select(_ => Value);
+        var result = await TaskError.Map(_ => Value);
 
         AssertResult.Error(ErrorMessage, result);
     }
 
     [Fact]
-    public async Task SelectError_OnSuccess_ReturnsSuccess()
+    public async Task MapError_OnSuccess_ReturnsSuccess()
     {
-        var result = await TaskSuccess.SelectError(_ => OtherErrorMessage);
+        var result = await TaskSuccess.MapError(_ => OtherErrorMessage);
 
         AssertResult.Success(Value, result);
     }
 
     [Fact]
-    public async Task SelectError_OnError_ReturnsError()
+    public async Task MapError_OnError_ReturnsError()
     {
-        var result = await TaskError.SelectError(_ => OtherErrorMessage);
+        var result = await TaskError.MapError(_ => OtherErrorMessage);
 
         AssertResult.Error(OtherErrorMessage, result);
     }
 
     [Fact]
-    public async Task SelectOr_OnSuccess_ReturnsSuccess()
+    public async Task MapOr_OnSuccess_ReturnsSuccess()
     {
-        var result = await TaskSuccess.SelectOr(OtherValue, v => v);
+        var result = await TaskSuccess.MapOr(OtherValue, v => v);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public async Task SelectOr_OnError_ReturnsError()
+    public async Task MapOr_OnError_ReturnsError()
     {
-        var result = await TaskError.SelectOr(Value, _ => OtherValue);
+        var result = await TaskError.MapOr(Value, _ => OtherValue);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public async Task SelectOrElse_OnSuccess_ReturnsSuccess()
+    public async Task MapOrElse_OnSuccess_ReturnsSuccess()
     {
-        var result = await TaskSuccess.SelectOrElse(() => OtherValue, v => v);
+        var result = await TaskSuccess.MapOrElse(() => OtherValue, v => v);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public async Task SelectOrElse_OnError_ReturnsError()
+    public async Task MapOrElse_OnError_ReturnsError()
     {
-        var result = await TaskError.SelectOrElse(() => Value, _ => OtherValue);
+        var result = await TaskError.MapOrElse(() => Value, _ => OtherValue);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public async Task SelectOrElse_OnSuccess_DoesNotCallDefaultValueProvider()
+    public async Task MapOrElse_OnSuccess_DoesNotCallDefaultValueProvider()
     {
         var defaultValueProvider = Substitute.For<Func<object>>();
         defaultValueProvider.Invoke().Returns(OtherValue);
 
-        await TaskSuccess.SelectOrElse(defaultValueProvider, v => v);
+        await TaskSuccess.MapOrElse(defaultValueProvider, v => v);
 
         Assert.Empty(defaultValueProvider.ReceivedCalls());
     }
@@ -483,7 +459,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task AndThen_OnSuccessAndSuccess_ReturnsRightSuccess()
     {
-        var result = await TaskSuccess.AndThen(() => OtherSuccess);
+        var result = await TaskSuccess.AndThen(_ => OtherSuccess);
 
         AssertResult.Success(OtherValue, result);
     }
@@ -491,7 +467,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task AndThen_OnSuccessAndNone_ReturnsError()
     {
-        var result = await TaskSuccess.AndThen(() => Error);
+        var result = await TaskSuccess.AndThen(_ => Error);
 
         AssertResult.Error(ErrorMessage, result);
     }
@@ -499,7 +475,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task AndThen_OnErrorAndSuccess_ReturnsError()
     {
-        var result = await TaskError.AndThen(() => Success);
+        var result = await TaskError.AndThen(_ => Success);
 
         AssertResult.Error(ErrorMessage, result);
     }
@@ -507,7 +483,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task AndThen_OnErrorAndError_ReturnsLeftError()
     {
-        var result = await TaskError.AndThen(() => OtherError);
+        var result = await TaskError.AndThen(_ => OtherError);
 
         AssertResult.Error(ErrorMessage, result);
     }
@@ -515,8 +491,8 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task AndThen_OnError_DoesNotCallResultProvider()
     {
-        var resultProvider = Substitute.For<Func<Result<object, object>>>();
-        resultProvider.Invoke().Returns(OtherSuccess);
+        var resultProvider = Substitute.For<Func<object, Result<object, object>>>();
+        resultProvider.Invoke(Arg.Any<object>()).Returns(OtherSuccess);
 
         await TaskError.AndThen(resultProvider);
 
@@ -558,7 +534,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task OrElse_OnSuccessAndSuccess_ReturnsLeftSuccess()
     {
-        var result = await TaskSuccess.OrElse(() => OtherSuccess);
+        var result = await TaskSuccess.OrElse(_ => OtherSuccess);
 
         AssertResult.Success(Value, result);
     }
@@ -566,7 +542,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task OrElse_OnSuccessAndNone_ReturnsSuccess()
     {
-        var result = await TaskSuccess.OrElse(() => Error);
+        var result = await TaskSuccess.OrElse(_ => Error);
 
         AssertResult.Success(Value, result);
     }
@@ -574,7 +550,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task OrElse_OnErrorAndSuccess_ReturnsSuccess()
     {
-        var result = await TaskError.OrElse(() => Success);
+        var result = await TaskError.OrElse(_ => Success);
 
         AssertResult.Success(Value, result);
     }
@@ -582,7 +558,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task OrElse_OnErrorAndError_ReturnsRightError()
     {
-        var result = await TaskError.OrElse(() => OtherError);
+        var result = await TaskError.OrElse(_ => OtherError);
 
         AssertResult.Error(OtherErrorMessage, result);
     }
@@ -590,8 +566,8 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task OrElse_OnSuccess_DoesNotCallResultProvider()
     {
-        var resultProvider = Substitute.For<Func<Result<object, object>>>();
-        resultProvider.Invoke().Returns(OtherSuccess);
+        var resultProvider = Substitute.For<Func<object?, Result<object, object>>>();
+        resultProvider.Invoke(Arg.Any<object>()).Returns(OtherSuccess);
 
         await TaskSuccess.OrElse(resultProvider);
 

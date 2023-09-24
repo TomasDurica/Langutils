@@ -158,49 +158,25 @@ public class OptionExtensionsTests
     }
 
     [Fact]
-    public void Where_OnSome_WhenMatchesPredicate_ReturnsSome()
+    public void Filter_OnSome_WhenMatchesPredicate_ReturnsSome()
     {
-        var result = Some.Where(v => v == Value);
+        var result = Some.Filter(v => v == Value);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public void Where_OnSome_WhenDoesNotMatchPredicate_ReturnsNone()
+    public void Filter_OnSome_WhenDoesNotMatchPredicate_ReturnsNone()
     {
-        var result = Some.Where(v => v != Value);
+        var result = Some.Filter(v => v != Value);
 
         AssertOption.None(result);
     }
 
     [Fact]
-    public void Where_OnNone_ReturnsNone()
+    public void Filter_OnNone_ReturnsNone()
     {
-        var result = None.Where(_ => true);
-
-        AssertOption.None(result);
-    }
-
-    [Fact]
-    public void SelectMany_OnSome_WhenSelectorReturnsSome_ReturnsSome()
-    {
-        var result = Some.SelectMany(Option.Some);
-
-        AssertOption.Some(Value, result);
-    }
-
-    [Fact]
-    public void SelectMany_OnSome_WhenSelectorReturnsNone_ReturnsNone()
-    {
-        var result = Some.SelectMany(_ => None);
-
-        AssertOption.None(result);
-    }
-
-    [Fact]
-    public void SelectMany_OnNone_ReturnsNone()
-    {
-        var result = None.SelectMany(_ => Some);
+        var result = None.Filter(_ => true);
 
         AssertOption.None(result);
     }
@@ -230,60 +206,60 @@ public class OptionExtensionsTests
     }
 
     [Fact]
-    public void Select_OnSome_ReturnsSome()
+    public void Map_OnSome_ReturnsSome()
     {
-        var result = Some.Select(v => v);
+        var result = Some.Map(v => v);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public void Select_OnNone_ReturnsNone()
+    public void Map_OnNone_ReturnsNone()
     {
-        var result = None.Select(v => v);
+        var result = None.Map(v => v);
 
         AssertOption.None(result);
     }
 
     [Fact]
-    public void SelectOr_OnSome_ReturnsSome()
+    public void MapOr_OnSome_ReturnsSome()
     {
-        var result = Some.SelectOr(OtherValue, v => v);
+        var result = Some.MapOr(OtherValue, v => v);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public void SelectOr_OnNone_ReturnsDefaultValue()
+    public void MapOr_OnNone_ReturnsDefaultValue()
     {
-        var result = None.SelectOr(OtherValue, v => v);
+        var result = None.MapOr(OtherValue, v => v);
 
         AssertOption.Some(OtherValue, result);
     }
 
     [Fact]
-    public void SelectOrElse_OnSome_ReturnsSome()
+    public void MapOrElse_OnSome_ReturnsSome()
     {
-        var result = Some.SelectOrElse(() => OtherValue, v => v);
+        var result = Some.MapOrElse(() => OtherValue, v => v);
 
         AssertOption.Some(Value, result);
     }
 
     [Fact]
-    public void SelectOrElse_OnSome_DoesNotCallDefaultValueProvider()
+    public void MapOrElse_OnSome_DoesNotCallDefaultValueProvider()
     {
         var defaultValueProvider = Substitute.For<Func<object>>();
         defaultValueProvider.Invoke().Returns(OtherValue);
 
-        Some.SelectOrElse(defaultValueProvider, v => v);
+        Some.MapOrElse(defaultValueProvider, v => v);
 
         Assert.Empty(defaultValueProvider.ReceivedCalls());
     }
 
     [Fact]
-    public void SelectOrElse_OnNone_ReturnsDefaultValue()
+    public void MapOrElse_OnNone_ReturnsDefaultValue()
     {
-        var result = None.SelectOrElse(() => Value, v => v);
+        var result = None.MapOrElse(() => Value, v => v);
 
         AssertOption.Some(Value, result);
     }
@@ -438,7 +414,7 @@ public class OptionExtensionsTests
     [Fact]
     public void AndThen_OnSomeSome_ReturnsSomeWithRightValue()
     {
-        var result = Some.AndThen(() => OtherSome);
+        var result = Some.AndThen(_ => OtherSome);
 
         AssertOption.Equal(OtherSome, result);
     }
@@ -446,7 +422,7 @@ public class OptionExtensionsTests
     [Fact]
     public void AndThen_OnSomeNone_ReturnsNone()
     {
-        var result = Some.AndThen(() => None);
+        var result = Some.AndThen(_ => None);
 
         AssertOption.None(result);
     }
@@ -454,7 +430,7 @@ public class OptionExtensionsTests
     [Fact]
     public void AndThen_OnNoneSome_ReturnsNone()
     {
-        var result = None.AndThen(() => Some);
+        var result = None.AndThen(_ => Some);
 
         AssertOption.None(result);
     }
@@ -462,7 +438,7 @@ public class OptionExtensionsTests
     [Fact]
     public void AndThen_OnNoneNone_ReturnsNone()
     {
-        var result = None.AndThen(() => None);
+        var result = None.AndThen(_ => None);
 
         AssertOption.None(result);
     }
@@ -470,8 +446,8 @@ public class OptionExtensionsTests
     [Fact]
     public void AndThen_OnNone_DoesNotCallOptionProvider()
     {
-        var optionProvider = Substitute.For<Func<Option<object>>>();
-        optionProvider.Invoke().Returns(Some);
+        var optionProvider = Substitute.For<Func<object, Option<object>>>();
+        optionProvider.Invoke(Arg.Any<object>()).Returns(Some);
 
         None.AndThen(optionProvider);
 
@@ -847,6 +823,131 @@ public class OptionExtensionsTests
             .Collect();
 
         AssertOption.Some(Array.Empty<object>().AsEnumerable(), result);
+    }
+
+    [Fact]
+    public void Aggregate_OnAllSome_ReturnsSomeWithAggregate()
+    {
+        var result = new[]
+            {
+                Option.Some(0),
+                Option.Some(1),
+                Option.Some(2)
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertOption.Some(3, result);
+    }
+
+    [Fact]
+    public void Aggregate_OnMixed_ReturnsNone()
+    {
+        var result = new[]
+            {
+                Option.Some(0),
+                Option.None<int>()
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertOption.None(result);
+    }
+
+    [Fact]
+    public void Aggregate_OnNoneSome_ReturnsNone()
+    {
+        var result = new[]
+            {
+                Option.None<int>(),
+                Option.Some(0)
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertOption.None(result);
+    }
+
+    [Fact]
+    public void Aggregate_OnAllNone_ReturnsNone()
+    {
+        var result = new[]
+            {
+                Option.None<int>(),
+                Option.None<int>()
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertOption.None(result);
+    }
+
+    [Fact]
+    public void Aggregate_OnEmpty_ThrowsInvalidOperationException()
+    {
+        var result = Assert.Throws<InvalidOperationException>(() => Array
+            .Empty<Option<int>>()
+            .Aggregate((a, b) => a + b));
+
+        Assert.Equal("Sequence contains no elements", result.Message);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnAllSome_ReturnsSomeWithAggregate()
+    {
+        var result = new[]
+            {
+                Option.Some(0),
+                Option.Some(1),
+                Option.Some(2)
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertOption.Some(4, result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnMixed_ReturnsNone()
+    {
+        var result = new[]
+            {
+                Option.Some(0),
+                Option.None<int>()
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertOption.None(result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnNoneSome_ReturnsNone()
+    {
+        var result = new[]
+            {
+                Option.None<int>(),
+                Option.Some(0)
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertOption.None(result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnAllNone_ReturnsNone()
+    {
+        var result = new[]
+            {
+                Option.None<int>(),
+                Option.None<int>()
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertOption.None(result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnEmpty_ReturnsSomeWithZero()
+    {
+        var result = Array.Empty<Option<int>>()
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertOption.Some(1, result);
     }
 
     [Fact]

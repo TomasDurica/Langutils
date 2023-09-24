@@ -16,9 +16,10 @@ public class DeferTests
 
         using (new Defer(onDispose))
         {
+            Assert.Empty(onDispose.ReceivedCalls());
         }
 
-        Assert.Single((IEnumerable)onDispose.ReceivedCalls());
+        Assert.Single(onDispose.ReceivedCalls());
     }
 
     [Fact]
@@ -29,9 +30,10 @@ public class DeferTests
 
         using (new DeferWith<object>(onDispose, context))
         {
+            Assert.Empty(onDispose.ReceivedCalls());
         }
 
-        Assert.Single((IEnumerable)onDispose.ReceivedCalls());
+        Assert.Single(onDispose.ReceivedCalls());
         Assert.True(onDispose.ReceivedCalls().All(call => call.GetArguments().Single() == context));
     }
 
@@ -42,9 +44,10 @@ public class DeferTests
 
         await using (new DeferAsync(onDispose))
         {
+            Assert.Empty(onDispose.ReceivedCalls());
         }
 
-        Assert.Single((IEnumerable)onDispose.ReceivedCalls());
+        Assert.Single(onDispose.ReceivedCalls());
     }
 
     [Fact]
@@ -55,9 +58,10 @@ public class DeferTests
 
         await using (new DeferAsyncWith<object>(onDispose, context))
         {
+            Assert.Empty(onDispose.ReceivedCalls());
         }
 
-        Assert.Single((IEnumerable)onDispose.ReceivedCalls());
+        Assert.Single(onDispose.ReceivedCalls());
         Assert.True(onDispose.ReceivedCalls().All(call => call.GetArguments().Single() == context));
     }
 }

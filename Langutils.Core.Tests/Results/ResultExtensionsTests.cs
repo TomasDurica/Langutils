@@ -1,7 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using Langutils.Core.Options;
 using Langutils.Core.Results;
 using Langutils.Core.Tests.Asserts;
@@ -303,30 +300,6 @@ public class ResultExtensionsTests
     }
 
     [Fact]
-    public void SelectMany_OnSuccessSuccess_ReturnsSuccess()
-    {
-        var result = Success.SelectMany(_ => OtherSuccess);
-
-        AssertResult.Success(OtherValue, result);
-    }
-
-    [Fact]
-    public void SelectMany_OnSuccessError_ReturnsError()
-    {
-        var result = Success.SelectMany(_ => OtherError);
-
-        AssertResult.Error(OtherErrorMessage, result);
-    }
-
-    [Fact]
-    public void SelectMany_OnError_ReturnsError()
-    {
-        var result = Error.SelectMany(_ => OtherSuccess);
-
-        AssertResult.Error(ErrorMessage, result);
-    }
-
-    [Fact]
     public void Flatten_OnSuccessSuccess_ReturnsSuccess()
     {
         var result = Result.Success<Result<object, object>, object>(Success).Flatten();
@@ -351,76 +324,76 @@ public class ResultExtensionsTests
     }
 
     [Fact]
-    public void Select_OnSuccess_ReturnsSuccess()
+    public void Map_OnSuccess_ReturnsSuccess()
     {
-        var result = Success.Select(Result.Success);
+        var result = Success.Map(Result.Success);
 
         AssertResult.Success(Value, result);
     }
 
     [Fact]
-    public void Select_OnError_ReturnsError()
+    public void Map_OnError_ReturnsError()
     {
-        var result = Error.Select(_ => OtherValue);
+        var result = Error.Map(_ => OtherValue);
 
         AssertResult.Error(ErrorMessage, result);
     }
 
     [Fact]
-    public void SelectError_OnSuccess_ReturnsSuccess()
+    public void MapError_OnSuccess_ReturnsSuccess()
     {
-        var result = Success.SelectError(_ => OtherErrorMessage);
+        var result = Success.MapError(_ => OtherErrorMessage);
 
         AssertResult.Success(Value, result);
     }
 
     [Fact]
-    public void SelectError_OnError_ReturnsError()
+    public void MapError_OnError_ReturnsError()
     {
-        var result = Error.SelectError(_ => OtherErrorMessage);
+        var result = Error.MapError(_ => OtherErrorMessage);
 
         AssertResult.Error(OtherErrorMessage, result);
     }
 
     [Fact]
-    public void SelectOr_OnSuccess_ReturnsSuccess()
+    public void MapOr_OnSuccess_ReturnsSuccess()
     {
-        var result = Success.SelectOr(OtherValue, v => v);
+        var result = Success.MapOr(OtherValue, v => v);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public void SelectOr_OnError_ReturnsError()
+    public void MapOr_OnError_ReturnsError()
     {
-        var result = Error.SelectOr(Value, _ => OtherValue);
+        var result = Error.MapOr(Value, _ => OtherValue);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public void SelectOrElse_OnSuccess_ReturnsSuccess()
+    public void MapOrElse_OnSuccess_ReturnsSuccess()
     {
-        var result = Success.SelectOrElse(() => OtherValue, v => v);
+        var result = Success.MapOrElse(() => OtherValue, v => v);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public void SelectOrElse_OnError_ReturnsError()
+    public void MapOrElse_OnError_ReturnsError()
     {
-        var result = Error.SelectOrElse(() => Value, _ => OtherValue);
+        var result = Error.MapOrElse(() => Value, _ => OtherValue);
 
         Assert.Same(Value, result);
     }
 
     [Fact]
-    public void SelectOrElse_OnSuccess_DoesNotCallDefaultValueProvider()
+    public void MapOrElse_OnSuccess_DoesNotCallDefaultValueProvider()
     {
         var defaultValueProvider = Substitute.For<Func<object>>();
         defaultValueProvider.Invoke().Returns(OtherValue);
 
-        Success.SelectOrElse(defaultValueProvider, v => v);
+        Success.MapOrElse(defaultValueProvider, v => v);
 
         Assert.Empty(defaultValueProvider.ReceivedCalls());
     }
@@ -508,7 +481,7 @@ public class ResultExtensionsTests
     [Fact]
     public void AndThen_OnSuccessAndSuccess_ReturnsRightSuccess()
     {
-        var result = Success.AndThen(() => OtherSuccess);
+        var result = Success.AndThen(_ => OtherSuccess);
 
         AssertResult.Success(OtherValue, result);
     }
@@ -516,7 +489,7 @@ public class ResultExtensionsTests
     [Fact]
     public void AndThen_OnSuccessAndNone_ReturnsError()
     {
-        var result = Success.AndThen(() => Error);
+        var result = Success.AndThen(_ => Error);
 
         AssertResult.Error(ErrorMessage, result);
     }
@@ -524,7 +497,7 @@ public class ResultExtensionsTests
     [Fact]
     public void AndThen_OnErrorAndSuccess_ReturnsError()
     {
-        var result = Error.AndThen(() => Success);
+        var result = Error.AndThen(_ => Success);
 
         AssertResult.Error(ErrorMessage, result);
     }
@@ -532,7 +505,7 @@ public class ResultExtensionsTests
     [Fact]
     public void AndThen_OnErrorAndError_ReturnsLeftError()
     {
-        var result = Error.AndThen(() => OtherError);
+        var result = Error.AndThen(_ => OtherError);
 
         AssertResult.Error(ErrorMessage, result);
     }
@@ -540,8 +513,8 @@ public class ResultExtensionsTests
     [Fact]
     public void AndThen_OnError_DoesNotCallResultProvider()
     {
-        var resultProvider = Substitute.For<Func<Result<object, object>>>();
-        resultProvider.Invoke().Returns(OtherSuccess);
+        var resultProvider = Substitute.For<Func<object, Result<object, object>>>();
+        resultProvider.Invoke(Arg.Any<object>()).Returns(OtherSuccess);
 
         Error.AndThen(resultProvider);
 
@@ -583,7 +556,7 @@ public class ResultExtensionsTests
     [Fact]
     public void OrElse_OnSuccessAndSuccess_ReturnsLeftSuccess()
     {
-        var result = Success.OrElse(() => OtherSuccess);
+        var result = Success.OrElse(_ => OtherSuccess);
 
         AssertResult.Success(Value, result);
     }
@@ -591,7 +564,7 @@ public class ResultExtensionsTests
     [Fact]
     public void OrElse_OnSuccessAndNone_ReturnsSuccess()
     {
-        var result = Success.OrElse(() => Error);
+        var result = Success.OrElse(_ => Error);
 
         AssertResult.Success(Value, result);
     }
@@ -599,7 +572,7 @@ public class ResultExtensionsTests
     [Fact]
     public void OrElse_OnErrorAndSuccess_ReturnsSuccess()
     {
-        var result = Error.OrElse(() => Success);
+        var result = Error.OrElse(_ => Success);
 
         AssertResult.Success(Value, result);
     }
@@ -607,7 +580,7 @@ public class ResultExtensionsTests
     [Fact]
     public void OrElse_OnErrorAndError_ReturnsRightError()
     {
-        var result = Error.OrElse(() => OtherError);
+        var result = Error.OrElse(_ => OtherError);
 
         AssertResult.Error(OtherErrorMessage, result);
     }
@@ -615,8 +588,8 @@ public class ResultExtensionsTests
     [Fact]
     public void OrElse_OnSuccess_DoesNotCallResultProvider()
     {
-        var resultProvider = Substitute.For<Func<Result<object, object>>>();
-        resultProvider.Invoke().Returns(OtherSuccess);
+        var resultProvider = Substitute.For<Func<object?, Result<object, object>>>();
+        resultProvider.Invoke(Arg.Any<object>()).Returns(OtherSuccess);
 
         Success.OrElse(resultProvider);
 
@@ -804,5 +777,130 @@ public class ResultExtensionsTests
             .Collect();
 
         AssertResult.Success(Array.Empty<object>().AsEnumerable(), result);
+    }
+
+    [Fact]
+    public void Aggregate_OnAllSuccess_ReturnsSuccessWithAggregate()
+    {
+        var result = new[]
+            {
+                Result.Success(0),
+                Result.Success(1),
+                Result.Success(2)
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertResult.Success(3, result);
+    }
+
+    [Fact]
+    public void Aggregate_OnMixed_ReturnsError()
+    {
+        var result = new[]
+            {
+                Result.Success(0),
+                Result.Error<int>("")
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertResult.Error("", result);
+    }
+
+    [Fact]
+    public void Aggregate_OnErrorSuccess_ReturnsError()
+    {
+        var result = new[]
+            {
+                Result.Error<int>(""),
+                Result.Success(0)
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertResult.Error("", result);
+    }
+
+    [Fact]
+    public void Aggregate_OnAllError_ReturnsError()
+    {
+        var result = new[]
+            {
+                Result.Error<int>("0"),
+                Result.Error<int>("1")
+            }
+            .Aggregate((a, b) => a + b);
+
+        AssertResult.Error("0",result);
+    }
+
+    [Fact]
+    public void Aggregate_OnEmpty_ThrowsInvalidOperationException()
+    {
+        var result = Assert.Throws<InvalidOperationException>(() => Array
+            .Empty<Result<int, string>>()
+            .Aggregate((a, b) => a + b));
+
+        Assert.Equal("Sequence contains no elements", result.Message);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnAllSuccess_ReturnsSuccessWithAggregate()
+    {
+        var result = new[]
+            {
+                Result.Success(0),
+                Result.Success(1),
+                Result.Success(2)
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertResult.Success(4, result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnMixed_ReturnsError()
+    {
+        var result = new[]
+            {
+                Result.Success(0),
+                Result.Error<int>("")
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertResult.Error("", result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnErrorSuccess_ReturnsError()
+    {
+        var result = new[]
+            {
+                Result.Error<int>(""),
+                Result.Success(0)
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertResult.Error("", result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnAllError_ReturnsError()
+    {
+        var result = new[]
+            {
+                Result.Error<int>("0"),
+                Result.Error<int>("1")
+            }
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertResult.Error("0", result);
+    }
+
+    [Fact]
+    public void AggregateWithDefault_OnEmpty_ReturnsSuccessWithZero()
+    {
+        var result = Array.Empty<Result<int, string>>()
+            .Aggregate(1, (a, b) => a + b);
+
+        AssertResult.Success(1, result);
     }
 }

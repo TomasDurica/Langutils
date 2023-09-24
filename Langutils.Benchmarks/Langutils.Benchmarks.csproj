@@ -9,6 +9,11 @@
 
     <ItemGroup>
       <PackageReference Include="BenchmarkDotNet" Version="0.13.8" />
+      <PackageReference Include="CSharpFunctionalExtensions" Version="2.40.1" />
+      <PackageReference Include="Functional.Primitives" Version="2.15.0" />
+      <PackageReference Include="Functional.Primitives.Extensions" Version="2.15.0" />
+      <PackageReference Include="LanguageExt.Core" Version="4.4.5" />
+      <PackageReference Include="Oxide" Version="1.0.0" />
     </ItemGroup>
 
     <ItemGroup>

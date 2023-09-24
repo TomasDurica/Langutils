@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Langutils.Core.Results;
+﻿using Langutils.Core.Results;
 
 namespace Langutils.Core.Options;
 
@@ -28,31 +26,25 @@ public static class OptionExtensionsAsync
         return self;
     }
 
-    public static async Task<Option<TValue>> WhereAsync<TValue>(this Option<TValue> self, Func<TValue, Task<bool>> predicate) => self switch
+    public static async Task<Option<TValue>> FilterAsync<TValue>(this Option<TValue> self, Func<TValue, Task<bool>> predicate) => self switch
     {
         { IsSome: true, Value: var value } when await predicate(value).ConfigureAwait(false) => self,
         _ => None.Instance
     };
 
-    public static async Task<Option<TOut>> SelectManyAsync<TIn, TOut>(this Option<TIn> self, Func<TIn, Task<Option<TOut>>> selector) => self switch
+    public static async Task<Option<TOut>> MapAsync<TIn, TOut>(this Option<TIn> self, Func<TIn, Task<TOut>> selector) => self switch
     {
         { IsSome: true, Value: var value } => await selector(value).ConfigureAwait(false),
         _ => None.Instance
     };
 
-    public static async Task<Option<TOut>> SelectAsync<TIn, TOut>(this Option<TIn> self, Func<TIn, Task<TOut>> selector) => self switch
-    {
-        { IsSome: true, Value: var value } => await selector(value).ConfigureAwait(false),
-        _ => None.Instance
-    };
-
-    public static async Task<TOut> SelectOrAsync<TIn, TOut>(this Option<TIn> self, TOut defaultValue, Func<TIn, Task<TOut>> selector) => self switch
+    public static async Task<TOut> MapOrAsync<TIn, TOut>(this Option<TIn> self, TOut defaultValue, Func<TIn, Task<TOut>> selector) => self switch
     {
         { IsSome: true, Value: var value } => await selector(value).ConfigureAwait(false),
         _ => defaultValue
     };
 
-    public static async Task<TOut> SelectOrElseAsync<TIn, TOut>(this Option<TIn> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector) => self switch
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Option<TIn> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector) => self switch
     {
         { IsSome: true, Value: var value } => await selector(value).ConfigureAwait(false),
         _ => defaultValueProvider()
@@ -64,10 +56,10 @@ public static class OptionExtensionsAsync
         _ => await errorProvider().ConfigureAwait(false)
     };
 
-    public static async Task<Option<TValue>> AndThenAsync<TValue>(this Option<TValue> self, Func<Task<Option<TValue>>> optionProvider) => self switch
+    public static async Task<Option<TOut>> AndThenAsync<TIn, TOut>(this Option<TIn> self, Func<TIn, Task<Option<TOut>>> optionProvider) => self switch
     {
-        { IsSome: true } => await optionProvider().ConfigureAwait(false),
-        _ => self
+        { IsSome: true, Value: var value } => await optionProvider(value).ConfigureAwait(false),
+        _ => None.Instance
     };
 
     public static async Task<Option<TValue>> OrElseAsync<TValue>(this Option<TValue> self, Func<Task<Option<TValue>>> optionProvider) => self switch

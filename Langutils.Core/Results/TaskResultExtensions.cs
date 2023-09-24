@@ -46,23 +46,20 @@ public static class TaskResultExtensionsResultExtensions
     public static async Task<Result<TValue, TError>> TapError<TValue, TError>(this Task<Result<TValue, TError>> self, Action<TError?> onError)
         => (await self).TapError(onError);
 
-    public static async Task<Result<TOut, TError>> SelectMany<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TIn, Result<TOut, TError>> selector)
-        => (await self).SelectMany(selector);
-
     public static async Task<Result<TValue, TError>> Flatten<TValue, TError>(this Task<Result<Result<TValue, TError>, TError>> self)
         => (await self).Flatten();
 
-    public static async Task<Result<TOut, TError>> Select<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TIn, TOut> selector)
-        => (await self).Select(selector);
+    public static async Task<Result<TOut, TError>> Map<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TIn, TOut> selector)
+        => (await self).Map(selector);
 
-    public static async Task<Result<TValue, TOut>> SelectError<TValue, TIn, TOut>(this Task<Result<TValue, TIn>> self, Func<TIn?, TOut> selector)
-        => (await self).SelectError(selector);
+    public static async Task<Result<TValue, TOut>> MapError<TValue, TIn, TOut>(this Task<Result<TValue, TIn>> self, Func<TIn?, TOut> selector)
+        => (await self).MapError(selector);
 
-    public static async Task<TOut> SelectOr<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, TOut defaultValue, Func<TIn, TOut> selector)
-        => (await self).SelectOr(defaultValue, selector);
+    public static async Task<TOut> MapOr<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, TOut defaultValue, Func<TIn, TOut> selector)
+        => (await self).MapOr(defaultValue, selector);
 
-    public static async Task<TOut> SelectOrElse<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector)
-        => (await self).SelectOrElse(defaultValueProvider, selector);
+    public static async Task<TOut> MapOrElse<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector)
+        => (await self).MapOrElse(defaultValueProvider, selector);
 
     public static async Task<IEnumerable<TValue>> AsEnumerable<TValue, TError>(this Task<Result<TValue, TError>> self)
         => (await self).AsEnumerable();
@@ -73,16 +70,16 @@ public static class TaskResultExtensionsResultExtensions
     public static async Task<TValue[]> ToArray<TValue, TError>(this Task<Result<TValue, TError>> self)
         => (await self).ToArray();
 
-    public static async Task<Result<TValue, TError>> And<TValue, TError>(this Task<Result<TValue, TError>> self, Result<TValue, TError> option)
+    public static async Task<Result<TOut, TError>> And<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Result<TOut, TError> option)
         => (await self).And(option);
 
-    public static async Task<Result<TValue, TError>> AndThen<TValue, TError>(this Task<Result<TValue, TError>> self, Func<Result<TValue, TError>> optionProvider)
+    public static async Task<Result<TOut, TError>> AndThen<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TIn, Result<TOut, TError>> optionProvider)
         => (await self).AndThen(optionProvider);
 
-    public static async Task<Result<TValue, TError>> Or<TValue, TError>(this Task<Result<TValue, TError>> self, Result<TValue, TError> option)
+    public static async Task<Result<TValue, TOut>> Or<TValue, TIn, TOut>(this Task<Result<TValue, TIn>> self, Result<TValue, TOut> option)
         => (await self).Or(option);
 
-    public static async Task<Result<TValue, TError>> OrElse<TValue, TError>(this Task<Result<TValue, TError>> self, Func<Result<TValue, TError>> optionProvider)
+    public static async Task<Result<TValue, TOut>> OrElse<TValue, TIn, TOut>(this Task<Result<TValue, TIn>> self, Func<TIn?, Result<TValue, TOut>> optionProvider)
         => (await self).OrElse(optionProvider);
 
     public static async Task<Result<List<TValue>, TError>> Collect<TValue, TError>(this Task<List<Result<TValue, TError>>> results)

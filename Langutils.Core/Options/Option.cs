@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Langutils.Core.Options;
 
@@ -11,7 +10,7 @@ public static class Option
 
 public readonly record struct None
 {
-    public static None Instance => new();
+    public static readonly None Instance = new();
 }
 
 public readonly record struct Option<TValue>
