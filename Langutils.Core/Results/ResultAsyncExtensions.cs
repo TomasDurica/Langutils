@@ -1,8 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-
-namespace Langutils.Core.Results;
+﻿namespace Langutils.Core.Results;
 
 public static class ResultAsyncExtensions
 {
@@ -16,7 +12,7 @@ public static class ResultAsyncExtensions
     public static async Task<bool> IsErrorAndAsync<TValue, TError>(this Result<TValue, TError> self, Func<TError?, Task<bool>> predicate)
         => self switch
         {
-            { IsSuccess: false, Error: var error } => await predicate(error).ConfigureAwait(false),
+            { IsError: true, Error: var error } => await predicate(error).ConfigureAwait(false),
             _ => false
         };
 
@@ -24,8 +20,7 @@ public static class ResultAsyncExtensions
         => self switch
         {
             { IsSuccess: true, Value: var value } => value,
-            { IsError: true, Error: var error } => await defaultValueProvider(error).ConfigureAwait(false),
-            _ => throw new UnreachableException()
+            { Error: var error } => await defaultValueProvider(error).ConfigureAwait(false)
         };
 
     public static async Task<Result<TValue, TError>> TapAsync<TValue, TError>(this Result<TValue, TError> self, Func<TValue, Task> onSuccess)
@@ -40,7 +35,7 @@ public static class ResultAsyncExtensions
 
     public static async Task<Result<TValue, TError>> TapErrorAsync<TValue, TError>(this Result<TValue, TError> self, Func<TError?, Task> onError)
     {
-        if (self is { IsSuccess: false, Error: var error })
+        if (self is { IsError: true, Error: var error })
         {
             await onError(error).ConfigureAwait(false);
         }
@@ -65,7 +60,7 @@ public static class ResultAsyncExtensions
     public static async Task<Result<TValue, TOut>> SelectErrorAsync<TValue, TIn, TOut>(this Result<TValue, TIn> self, Func<TIn?, Task<TOut>> selector)
         => self switch
         {
-            { IsSuccess: false, Error: var error } => await selector(error).ConfigureAwait(false),
+            { IsError: true, Error: var error } => await selector(error).ConfigureAwait(false),
             { Value: var value } => value
         };
 

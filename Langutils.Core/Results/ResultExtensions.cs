@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+﻿using System.Diagnostics.CodeAnalysis;
 using Langutils.Core.Options;
 
 namespace Langutils.Core.Results;
@@ -17,7 +13,7 @@ public static class ResultExtensions
 
     public static bool IsErrorAnd<TValue, TError>(this Result<TValue, TError> self, Func<TError?, bool> predicate) => self switch
     {
-        { IsSuccess: false, Error: var error } => predicate(error),
+        { IsError: true, Error: var error } => predicate(error),
         _ => false
     };
 
@@ -60,8 +56,7 @@ public static class ResultExtensions
     public static TValue UnwrapOrElse<TValue, TError>(this Result<TValue, TError> self, Func<TError?, TValue> defaultValueProvider) => self switch
     {
         { IsSuccess: true, Value: var value } => value,
-        { IsError: true, Error: var error } => defaultValueProvider(error),
-        _ => throw new UnreachableException()
+        { Error: var error } => defaultValueProvider(error)
     };
 
     public static TError? ExpectError<TValue, TError>(this Result<TValue, TError> self, string message) => self switch
@@ -72,7 +67,7 @@ public static class ResultExtensions
 
     public static bool TryUnwrapError<TValue, TError>(this Result<TValue, TError> self, out TError? error)
     {
-        if (self is { IsSuccess: false, Error: var innerError })
+        if (self is { IsError: true, Error: var innerError })
         {
             error = innerError;
             return true;
@@ -104,7 +99,7 @@ public static class ResultExtensions
     {
         { IsSuccess: true, Value.IsSome: false } => None.Instance,
         { IsSuccess: true, Value: { IsSome: true, Value: var value }} => Result.Success<TValue, TError>(value),
-        { IsSuccess: false, Error: var error } => Result.Error<TValue, TError>(error!)
+        { Error: var error } => Result.Error<TValue, TError>(error!)
     };
 
     public static Result<TValue, TError> Tap<TValue, TError>(this Result<TValue, TError> self, Action<TValue> onSuccess)
@@ -119,7 +114,7 @@ public static class ResultExtensions
 
     public static Result<TValue, TError> TapError<TValue, TError>(this Result<TValue, TError> self, Action<TError?> onError)
     {
-        if (self is { IsSuccess: false, Error: var error })
+        if (self is { IsError: true, Error: var error })
         {
             onError(error);
         }
@@ -147,7 +142,7 @@ public static class ResultExtensions
 
     public static Result<TValue, TOut> SelectError<TValue, TIn, TOut>(this Result<TValue, TIn> self, Func<TIn?, TOut> selector) => self switch
     {
-        { IsSuccess: false, Error: var error } => selector(error),
+        { IsError: true, Error: var error } => selector(error),
         { Value: var value } => value
     };
 

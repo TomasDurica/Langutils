@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Langutils.Core.Results;
 
@@ -28,7 +27,6 @@ public readonly record struct Result<TValue, TError>
 
     [MemberNotNullWhen(false, nameof(Value))]
     public bool IsError => !IsSuccess;
-
     public TValue? Value { get; }
     public TError? Error { get; }
 
