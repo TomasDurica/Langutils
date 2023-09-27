@@ -7,17 +7,24 @@ public static class Result
     public static Result<TValue, TError> Success<TValue, TError>(TValue value)
         => new(value);
 
-    public static Result<TValue, string> Success<TValue>(TValue value)
+    public static Success<TValue> Success<TValue>(TValue value)
         => new(value);
 
     public static Result<TValue, TError> Error<TValue, TError>(TError error)
         => new(error);
 
-    public static Result<TValue, string> Error<TValue>(string error)
+    public static Error<TError> Error<TError>(TError error)
         => new(error);
+}
 
-    public static Result<TValue, Exception> Error<TValue>(Exception error)
-        => new(error);
+public readonly record struct Success<TValue>(TValue Value)
+{
+    public Result<TValue, TError> ToResult<TError>() => new(Value);
+};
+
+public readonly record struct Error<TError>(TError ErrorValue)
+{
+    public Result<TValue, TError> ToResult<TValue>() => new(ErrorValue);
 }
 
 public readonly record struct Result<TValue, TError>
@@ -27,6 +34,7 @@ public readonly record struct Result<TValue, TError>
 
     [MemberNotNullWhen(false, nameof(Value))]
     public bool IsError => !IsSuccess;
+
     public TValue? Value { get; }
     public TError? Error { get; }
 
@@ -47,6 +55,12 @@ public readonly record struct Result<TValue, TError>
 
     public static implicit operator Result<TValue, TError>(TError value)
         => new(value);
+
+    public static implicit operator Result<TValue, TError>(Success<TValue> success)
+        => success.ToResult<TError>();
+
+    public static implicit operator Result<TValue, TError>(Error<TError> error)
+        => error.ToResult<TValue>();
 
     public override string ToString()
         => IsSuccess

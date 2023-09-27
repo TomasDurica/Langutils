@@ -38,7 +38,7 @@ public static class ResultExtensions
     public static TValue Unwrap<TValue, TError>(this Result<TValue, TError> self) => self switch
     {
         { IsSuccess: true, Value: var value } => value,
-        _ => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Result.Error)}` value")
+        { Error: var error } => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Result.Error)}` value: {error}")
     };
 
     public static TValue UnwrapOr<TValue, TError>(this Result<TValue, TError> self, TValue defaultValue) => self switch

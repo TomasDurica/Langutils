@@ -292,7 +292,7 @@ public class TaskOptionExtensionsTests
     [Fact]
     public async Task Transpose_OnSomeSuccess_ReturnsSuccessSome()
     {
-        var result = await Task.FromResult(Option.Some(Result.Success(Value))).Transpose();
+        var result = await Task.FromResult(Option.Some(Result.Success<object, object>(Value))).Transpose();
 
         AssertResult.Success(Some, result);
     }

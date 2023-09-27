@@ -1,5 +1,4 @@
 using Langutils.Core.Results;
-using NSubstitute;
 
 namespace Langutils.Core.Tests.Results;
 
@@ -7,19 +6,19 @@ public class ResultTests
 {
     [Fact]
     public void IsSuccess_OnSuccess_ReturnsTrue()
-        => Assert.True(Result.Success(0).IsSuccess);
+        => Assert.True(Result.Success<object, object>(new object()).IsSuccess);
 
     [Fact]
     public void IsSuccess_OnError_ReturnsFalse()
-        => Assert.False(Result.Error<int>("").IsSuccess);
+        => Assert.False(Result.Error<object, object>(new object()).IsSuccess);
 
     [Fact]
     public void IsError_OnSuccess_ReturnsFalse()
-        => Assert.False(Result.Success(0).IsError);
+        => Assert.False(Result.Success<object, object>(new object()).IsError);
 
     [Fact]
     public void IsError_OnError_ShouldBeTrue()
-        => Assert.True(Result.Error<int>("").IsError);
+        => Assert.True(Result.Error<object, object>(new object()).IsError);
 
     [Fact]
     public void ImplicitCast_AssignableToValue_ReturnsSuccess()

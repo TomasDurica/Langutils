@@ -319,7 +319,7 @@ public class OptionExtensionsTests
     [Fact]
     public void Transpose_OnSomeSuccess_ReturnsSuccessSome()
     {
-        var result = Option.Some(Result.Success(Value)).Transpose();
+        var result = Option.Some(Result.Success<object, object>(Value)).Transpose();
 
         AssertResult.Success(Some, result);
     }

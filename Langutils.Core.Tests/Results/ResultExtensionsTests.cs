@@ -326,7 +326,7 @@ public class ResultExtensionsTests
     [Fact]
     public void Map_OnSuccess_ReturnsSuccess()
     {
-        var result = Success.Map(Result.Success);
+        var result = Success.Map(v => v);
 
         AssertResult.Success(Value, result);
     }
@@ -602,7 +602,7 @@ public class ResultExtensionsTests
     [InlineData(0, 0)]
     public void CompareTo_OnSuccessAndSuccess_ReturnsValueComparison(int left, int right)
     {
-        var result = Result.Success(left).CompareTo(Result.Success(right));
+        var result = Result.Success<int, object>(left).CompareTo(Result.Success<int, object>(right));
 
         Assert.Equal(left.CompareTo(right), result);
     }
@@ -610,7 +610,7 @@ public class ResultExtensionsTests
     [Fact]
     public void CompareTo_OnSuccessAndError_Returns1()
     {
-        var result = Result.Success(1).CompareTo(Result.Error<int>(""));
+        var result = Result.Success<int, object>(1).CompareTo(Result.Error<int, object>(ErrorMessage));
 
         Assert.Equal(1, result);
     }
@@ -618,7 +618,7 @@ public class ResultExtensionsTests
     [Fact]
     public void CompareTo_OnErrorAndSuccess_ReturnsMinus1()
     {
-        var result = Result.Error<int>("").CompareTo(Result.Success(1));
+        var result = Result.Error<int, object>(ErrorMessage).CompareTo(Result.Success<int, object>(1));
 
         Assert.Equal(-1, result);
     }
@@ -626,7 +626,7 @@ public class ResultExtensionsTests
     [Fact]
     public void CompareTo_OnErrorAndError_Returns0()
     {
-        var result = Result.Error<int>("").CompareTo(Result.Error<int>(""));
+        var result = Result.Error<int, object>(ErrorMessage).CompareTo(Result.Error<int, object>(ErrorMessage));
 
         Assert.Equal(0, result);
     }
@@ -784,9 +784,9 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Success(0),
-                Result.Success(1),
-                Result.Success(2)
+                Result.Success<int, object>(0),
+                Result.Success<int, object>(1),
+                Result.Success<int, object>(2)
             }
             .Aggregate((a, b) => a + b);
 
@@ -798,12 +798,12 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Success(0),
-                Result.Error<int>("")
+                Result.Success<int, object>(0),
+                Result.Error<int, object>(ErrorMessage)
             }
             .Aggregate((a, b) => a + b);
 
-        AssertResult.Error("", result);
+        AssertResult.Error(ErrorMessage, result);
     }
 
     [Fact]
@@ -811,12 +811,12 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Error<int>(""),
-                Result.Success(0)
+                Result.Error<int, object>(ErrorMessage),
+                Result.Success<int, object>(0)
             }
             .Aggregate((a, b) => a + b);
 
-        AssertResult.Error("", result);
+        AssertResult.Error(ErrorMessage, result);
     }
 
     [Fact]
@@ -824,19 +824,19 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Error<int>("0"),
-                Result.Error<int>("1")
+                Result.Error<int, object>(ErrorMessage),
+                Result.Error<int, object>(OtherErrorMessage)
             }
             .Aggregate((a, b) => a + b);
 
-        AssertResult.Error("0",result);
+        AssertResult.Error(ErrorMessage,result);
     }
 
     [Fact]
     public void Aggregate_OnEmpty_ThrowsInvalidOperationException()
     {
         var result = Assert.Throws<InvalidOperationException>(() => Array
-            .Empty<Result<int, string>>()
+            .Empty<Result<int, object>>()
             .Aggregate((a, b) => a + b));
 
         Assert.Equal("Sequence contains no elements", result.Message);
@@ -847,9 +847,9 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Success(0),
-                Result.Success(1),
-                Result.Success(2)
+                Result.Success<int, object>(0),
+                Result.Success<int, object>(1),
+                Result.Success<int, object>(2)
             }
             .Aggregate(1, (a, b) => a + b);
 
@@ -861,12 +861,12 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Success(0),
-                Result.Error<int>("")
+                Result.Success<int, object>(0),
+                Result.Error<int, object>(ErrorMessage)
             }
             .Aggregate(1, (a, b) => a + b);
 
-        AssertResult.Error("", result);
+        AssertResult.Error(ErrorMessage, result);
     }
 
     [Fact]
@@ -874,12 +874,12 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Error<int>(""),
-                Result.Success(0)
+                Result.Error<int, object>(ErrorMessage),
+                Result.Success<int, object>(0)
             }
             .Aggregate(1, (a, b) => a + b);
 
-        AssertResult.Error("", result);
+        AssertResult.Error(ErrorMessage, result);
     }
 
     [Fact]
@@ -887,18 +887,18 @@ public class ResultExtensionsTests
     {
         var result = new[]
             {
-                Result.Error<int>("0"),
-                Result.Error<int>("1")
+                Result.Error<int, object>(ErrorMessage),
+                Result.Error<int, object>(OtherErrorMessage)
             }
             .Aggregate(1, (a, b) => a + b);
 
-        AssertResult.Error("0", result);
+        AssertResult.Error(ErrorMessage, result);
     }
 
     [Fact]
     public void AggregateWithDefault_OnEmpty_ReturnsSuccessWithZero()
     {
-        var result = Array.Empty<Result<int, string>>()
+        var result = Array.Empty<Result<int, object>>()
             .Aggregate(1, (a, b) => a + b);
 
         AssertResult.Success(1, result);

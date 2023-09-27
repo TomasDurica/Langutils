@@ -300,7 +300,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task Map_OnSuccess_ReturnsSuccess()
     {
-        var result = await TaskSuccess.Map(Result.Success);
+        var result = await TaskSuccess.Map(v => v);
 
         AssertResult.Success(Value, result);
     }
