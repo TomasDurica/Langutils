@@ -64,25 +64,25 @@ public static class ResultAsyncExtensions
             _ => defaultValue
         };
 
-    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TError?, TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => await selector(value).ConfigureAwait(false),
-            _ => defaultValueProvider()
+            { Error: var error } => defaultValueProvider(error)
         };
 
-    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TError?, Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => selector(value),
-            _ => await defaultValueProvider().ConfigureAwait(false)
+            { Error: var error } => await defaultValueProvider(error).ConfigureAwait(false)
         };
 
-    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TError?, Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
         => self switch
         {
             { IsSuccess: true, Value: var value } => await selector(value).ConfigureAwait(false),
-            _ => await defaultValueProvider().ConfigureAwait(false)
+            { Error: var error } => await defaultValueProvider(error).ConfigureAwait(false)
         };
 
     public static async Task<Result<TOut, TError>> AndThenAsync<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TIn, Task<Result<TOut, TError>>> optionProvider)

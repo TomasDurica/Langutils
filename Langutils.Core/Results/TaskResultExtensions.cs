@@ -58,7 +58,7 @@ public static class TaskResultExtensionsResultExtensions
     public static async Task<TOut> MapOr<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, TOut defaultValue, Func<TIn, TOut> selector)
         => (await self).MapOr(defaultValue, selector);
 
-    public static async Task<TOut> MapOrElse<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector)
+    public static async Task<TOut> MapOrElse<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TError?, TOut> defaultValueProvider, Func<TIn, TOut> selector)
         => (await self).MapOrElse(defaultValueProvider, selector);
 
     public static async Task<IEnumerable<TValue>> AsEnumerable<TValue, TError>(this Task<Result<TValue, TError>> self)

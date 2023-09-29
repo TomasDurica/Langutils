@@ -127,10 +127,10 @@ public static class ResultExtensions
         _ => defaultValue
     };
 
-    public static TOut MapOrElse<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector) => self switch
+    public static TOut MapOrElse<TIn, TOut, TError>(this Result<TIn, TError> self, Func<TError?, TOut> defaultValueProvider, Func<TIn, TOut> selector) => self switch
     {
         { IsSuccess: true, Value: var value } => selector(value),
-        _ => defaultValueProvider()
+        { Error: var error } _ => defaultValueProvider(error)
     };
 
     public static Option<TValue> Success<TValue, TError>(this Result<TValue, TError> self) => self switch

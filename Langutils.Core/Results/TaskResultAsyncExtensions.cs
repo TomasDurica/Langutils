@@ -26,13 +26,13 @@ public static class TaskResultAsyncExtensions
     public static async Task<TOut> MapOrAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, TOut defaultValue, Func<TIn, Task<TOut>> selector)
         => await (await self).MapOrAsync(defaultValue, selector).ConfigureAwait(false);
 
-    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TError?, TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
         => await (await self).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
 
-    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TError?, Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
         => await (await self).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
 
-    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TError?, Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
         => await (await self).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
 
     public static async Task<Result<TOut, TError>> AndThenAsync<TIn, TOut, TError>(this Task<Result<TIn, TError>> self, Func<TIn, Task<Result<TOut, TError>>> optionProvider)

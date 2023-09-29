@@ -374,7 +374,7 @@ public class ResultExtensionsTests
     [Fact]
     public void MapOrElse_OnSuccess_ReturnsSuccess()
     {
-        var result = Success.MapOrElse(() => OtherValue, v => v);
+        var result = Success.MapOrElse(_ => OtherValue, v => v);
 
         Assert.Same(Value, result);
     }
@@ -382,7 +382,7 @@ public class ResultExtensionsTests
     [Fact]
     public void MapOrElse_OnError_ReturnsError()
     {
-        var result = Error.MapOrElse(() => Value, _ => OtherValue);
+        var result = Error.MapOrElse(_ => Value, _ => OtherValue);
 
         Assert.Same(Value, result);
     }
@@ -390,8 +390,8 @@ public class ResultExtensionsTests
     [Fact]
     public void MapOrElse_OnSuccess_DoesNotCallDefaultValueProvider()
     {
-        var defaultValueProvider = Substitute.For<Func<object>>();
-        defaultValueProvider.Invoke().Returns(OtherValue);
+        var defaultValueProvider = Substitute.For<Func<object?, object>>();
+        defaultValueProvider.Invoke(Arg.Any<object?>()).Returns(OtherValue);
 
         Success.MapOrElse(defaultValueProvider, v => v);
 

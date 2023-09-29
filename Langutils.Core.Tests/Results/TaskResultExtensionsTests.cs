@@ -348,7 +348,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task MapOrElse_OnSuccess_ReturnsSuccess()
     {
-        var result = await TaskSuccess.MapOrElse(() => OtherValue, v => v);
+        var result = await TaskSuccess.MapOrElse(_ => OtherValue, v => v);
 
         Assert.Same(Value, result);
     }
@@ -356,7 +356,7 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task MapOrElse_OnError_ReturnsError()
     {
-        var result = await TaskError.MapOrElse(() => Value, _ => OtherValue);
+        var result = await TaskError.MapOrElse(_ => Value, _ => OtherValue);
 
         Assert.Same(Value, result);
     }
@@ -364,8 +364,8 @@ public class TaskResultExtensionsTests
     [Fact]
     public async Task MapOrElse_OnSuccess_DoesNotCallDefaultValueProvider()
     {
-        var defaultValueProvider = Substitute.For<Func<object>>();
-        defaultValueProvider.Invoke().Returns(OtherValue);
+        var defaultValueProvider = Substitute.For<Func<object?, object>>();
+        defaultValueProvider.Invoke(Arg.Any<object?>()).Returns(OtherValue);
 
         await TaskSuccess.MapOrElse(defaultValueProvider, v => v);
 

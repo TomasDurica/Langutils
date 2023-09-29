@@ -64,14 +64,14 @@ To create a result, either use methods provided in the `Result` static class or 
 - MapOr&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, TOut defaultValue, Func&lt;TIn,TOut&gt; selector):Task&lt;TOut&gt;
 - MapOrAsync&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, TOut defaultValue, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
 - MapOrAsync&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, TOut defaultValue, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
-- MapOrElse&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;TOut&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):TOut
-- MapOrElse&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;TOut&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):Task&lt;TOut&gt;
-- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;TOut&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
-- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):Task&lt;TOut&gt;
-- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
-- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;TOut&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
-- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):Task&lt;TOut&gt;
-- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
+- MapOrElse&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;TError?, TOut&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):TOut
+- MapOrElse&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;TError?, TOut&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):Task&lt;TOut&gt;
+- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;TError?, TOut&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
+- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;TError?, Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):Task&lt;TOut&gt;
+- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Result&lt;TIn,TError&gt; self, Func&lt;TError?, Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
+- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;TError?, TOut&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
+- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;TError?, Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,TOut&gt; selector):Task&lt;TOut&gt;
+- MapOrElseAsync&lt;TIn,TOut,TError&gt;(this Task&lt;Result&lt;TIn,TError&gt;&gt; self, Func&lt;TError?, Task&lt;TOut&gt;&gt; defaultValueProvider, Func&lt;TIn,Task&lt;TOut&gt;&gt; selector):Task&lt;TOut&gt;
 - Or&lt;TValue,TIn,TOut&gt;(this Result&lt;TValue,TIn&gt; self, Result&lt;TValue,TOut&gt; option):Result&lt;TValue,TOut&gt;
 - Or&lt;TValue,TIn,TOut&gt;(this Task&lt;Result&lt;TValue,TIn&gt;&gt; self, Result&lt;TValue,TOut&gt; option):Task&lt;Result&lt;TValue,TOut&gt;&gt;
 - OrElse&lt;TValue,TIn,TOut&gt;(this Result&lt;TValue,TIn&gt; self, Func&lt;TIn?,Result&lt;TValue,TOut&gt;&gt; resultProvider):Result&lt;TValue,TOut&gt;

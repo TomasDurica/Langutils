@@ -175,7 +175,7 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithSelectorAsync_OnSuccess_ReturnsSuccess()
     {
-        var result = await Success.MapOrElseAsync(() => OtherValue, Task.FromResult);
+        var result = await Success.MapOrElseAsync(_ => OtherValue, Task.FromResult);
 
         Assert.Same(Value, result);
     }
@@ -183,7 +183,7 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithSelectorAsync_OnError_ReturnsError()
     {
-        var result = await Error.MapOrElseAsync(() => Value, Task.FromResult);
+        var result = await Error.MapOrElseAsync(_ => Value, Task.FromResult);
 
         Assert.Same(Value, result);
     }
@@ -191,8 +191,8 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithSelectorAsync_OnSuccess_DoesNotCallDefaultValueProvider()
     {
-        var defaultValueProvider = Substitute.For<Func<object>>();
-        defaultValueProvider.Invoke().Returns(OtherValue);
+        var defaultValueProvider = Substitute.For<Func<object?, object>>();
+        defaultValueProvider.Invoke(Arg.Any<object?>()).Returns(OtherValue);
 
         await Success.MapOrElseAsync(defaultValueProvider, Task.FromResult);
 
@@ -202,7 +202,7 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithDefaultValueProviderAsync_OnSuccess_ReturnsSuccess()
     {
-        var result = await Success.MapOrElseAsync(() => TaskOtherValue, v => v);
+        var result = await Success.MapOrElseAsync(_ => TaskOtherValue, v => v);
 
         Assert.Same(Value, result);
     }
@@ -210,7 +210,7 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithDefaultValueProviderAsync_OnError_ReturnsError()
     {
-        var result = await Error.MapOrElseAsync(() => TaskValue, v => v);
+        var result = await Error.MapOrElseAsync(_ => TaskValue, v => v);
 
         Assert.Same(Value, result);
     }
@@ -218,8 +218,8 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithDefaultValueProviderAsync_OnSuccess_DoesNotCallDefaultValueProvider()
     {
-        var defaultValueProvider = Substitute.For<Func<Task<object>>>();
-        defaultValueProvider.Invoke().Returns(TaskOtherValue);
+        var defaultValueProvider = Substitute.For<Func<object?, Task<object>>>();
+        defaultValueProvider.Invoke(Arg.Any<object?>()).Returns(TaskOtherValue);
 
         await Success.MapOrElseAsync(defaultValueProvider, v => v);
 
@@ -229,7 +229,7 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithSelectorAndDefaultValueProviderAsync_OnSuccess_ReturnsSuccess()
     {
-        var result = await Success.MapOrElseAsync(() => TaskOtherValue, Task.FromResult);
+        var result = await Success.MapOrElseAsync(_ => TaskOtherValue, Task.FromResult);
 
         Assert.Same(Value, result);
     }
@@ -237,7 +237,7 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithSelectorAndDefaultValueProviderAsync_OnError_ReturnsError()
     {
-        var result = await Error.MapOrElseAsync(() => TaskValue, Task.FromResult);
+        var result = await Error.MapOrElseAsync(_ => TaskValue, Task.FromResult);
 
         Assert.Same(Value, result);
     }
@@ -245,8 +245,8 @@ public class ResultAsyncExtensionsTests
     [Fact]
     public async Task MapOrElseAsyncWithSelectorAndDefaultValueProviderAsync_OnSuccess_DoesNotCallDefaultValueProvider()
     {
-        var defaultValueProvider = Substitute.For<Func<Task<object>>>();
-        defaultValueProvider.Invoke().Returns(TaskOtherValue);
+        var defaultValueProvider = Substitute.For<Func<object?, Task<object>>>();
+        defaultValueProvider.Invoke(Arg.Any<object?>()).Returns(TaskOtherValue);
 
         await Success.MapOrElseAsync(defaultValueProvider, Task.FromResult);
 
