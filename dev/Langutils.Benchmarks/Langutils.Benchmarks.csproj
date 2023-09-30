@@ -17,11 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Langutils.Core\Langutils.Core.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Langutils.Core\Langutils.Core.csproj" />
+      <ProjectReference Include="..\..\src\Langutils.Core\Langutils.Core.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Langutils.Core", "Langutils.Core\Langutils.Core.csproj", "{A362EC0C-6CF4-46E0-AAA0-F726A9DC314E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Langutils.Core", "src\Langutils.Core\Langutils.Core.csproj", "{A362EC0C-6CF4-46E0-AAA0-F726A9DC314E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Langutils.Benchmarks", "Langutils.Benchmarks\Langutils.Benchmarks.csproj", "{55DB808A-1471-44E7-BA66-E79E91296ED6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Langutils.Benchmarks", "dev\Langutils.Benchmarks\Langutils.Benchmarks.csproj", "{55DB808A-1471-44E7-BA66-E79E91296ED6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Langutils.Core.Tests", "Langutils.Core.Tests\Langutils.Core.Tests.csproj", "{4CB42D93-D324-4697-9DBB-B3EAEFB35106}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Langutils.Core.Tests", "test\Langutils.Core.Tests\Langutils.Core.Tests.csproj", "{4CB42D93-D324-4697-9DBB-B3EAEFB35106}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

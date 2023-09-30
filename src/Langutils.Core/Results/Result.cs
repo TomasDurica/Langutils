@@ -36,6 +36,7 @@ public readonly record struct Result<TValue, TError>
     public bool IsError => !IsSuccess;
 
     public TValue? Value { get; }
+
     public TError? Error { get; }
 
     public Result(TValue value)
