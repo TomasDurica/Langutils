@@ -2,11 +2,12 @@
 
 public static partial class ResultExtensions
 {
-    public static bool IsSuccessAnd<TValue, TError>(this Result<TValue, TError> self, Func<TValue, bool> predicate) => self switch
-    {
-        { IsSuccess: true, Value: var value } => predicate(value),
-        _ => false
-    };
+    public static bool IsSuccessAnd<TValue, TError>(this Result<TValue, TError> self, Func<TValue, bool> predicate)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } => predicate(value),
+            _ => false
+        };
 
     public static async Task<bool> IsSuccessAnd<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, bool> predicate)
         => (await self).IsSuccessAnd(predicate);
@@ -21,11 +22,12 @@ public static partial class ResultExtensions
     public static async Task<bool> IsSuccessAndAsync<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, Task<bool>> predicate)
         => await (await self).IsSuccessAndAsync(predicate).ConfigureAwait(false);
 
-    public static bool IsErrorAnd<TValue, TError>(this Result<TValue, TError> self, Func<TError?, bool> predicate) => self switch
-    {
-        { IsError: true, Error: var error } => predicate(error),
-        _ => false
-    };
+    public static bool IsErrorAnd<TValue, TError>(this Result<TValue, TError> self, Func<TError?, bool> predicate)
+        => self switch
+        {
+            { IsError: true, Error: var error } => predicate(error),
+            _ => false
+        };
 
     public static async Task<bool> IsErrorAnd<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TError?, bool> predicate)
         => (await self).IsErrorAnd(predicate);

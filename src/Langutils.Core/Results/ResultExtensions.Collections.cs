@@ -2,29 +2,32 @@
 
 public static partial class ResultExtensions
 {
-    public static IEnumerable<TValue> AsEnumerable<TValue, TError>(this Result<TValue, TError> self) => self switch
-    {
-        { IsSuccess: true, Value: var value } => new [] { value },
-        _ => Enumerable.Empty<TValue>()
-    };
+    public static IEnumerable<TValue> AsEnumerable<TValue, TError>(this Result<TValue, TError> self)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } => new [] { value },
+            _ => Enumerable.Empty<TValue>()
+        };
 
     public static async Task<IEnumerable<TValue>> AsEnumerable<TValue, TError>(this Task<Result<TValue, TError>> self)
         => (await self).AsEnumerable();
 
-    public static List<TValue> ToList<TValue, TError>(this Result<TValue, TError> self) => self switch
-    {
-        { IsSuccess: true, Value: var value } => new List<TValue> { value },
-        _ => new List<TValue>()
-    };
+    public static List<TValue> ToList<TValue, TError>(this Result<TValue, TError> self)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } => new List<TValue> { value },
+            _ => new List<TValue>()
+        };
 
     public static async Task<List<TValue>> ToList<TValue, TError>(this Task<Result<TValue, TError>> self)
         => (await self).ToList();
 
-    public static TValue[] ToArray<TValue, TError>(this Result<TValue, TError> self) => self switch
-    {
-        { IsSuccess: true, Value: var value } => new [] { value },
-        _ => Array.Empty<TValue>()
-    };
+    public static TValue[] ToArray<TValue, TError>(this Result<TValue, TError> self)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } => new [] { value },
+            _ => Array.Empty<TValue>()
+        };
 
     public static async Task<TValue[]> ToArray<TValue, TError>(this Task<Result<TValue, TError>> self)
         => (await self).ToArray();

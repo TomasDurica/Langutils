@@ -2,20 +2,22 @@
 
 public static partial class OptionExtensions
 {
-    public static bool IsSomeAnd<TValue>(this Option<TValue> self, Func<TValue, bool> predicate) => self switch
-    {
-        { IsSome: true, Value: var value } => predicate(value),
-        _ => false
-    };
+    public static bool IsSomeAnd<TValue>(this Option<TValue> self, Func<TValue, bool> predicate)
+        => self switch
+        {
+            { IsSome: true, Value: var value } => predicate(value),
+            _ => false
+        };
 
     public static async Task<bool> IsSomeAnd<TValue>(this Task<Option<TValue>> self, Func<TValue, bool> predicate)
         => (await self).IsSomeAnd(predicate);
 
-    public static async Task<bool> IsSomeAndAsync<TValue>(this Option<TValue> self, Func<TValue, Task<bool>> predicate) => self switch
-    {
-        { IsSome: true, Value: var value } => await predicate(value).ConfigureAwait(false),
-        _ => false
-    };
+    public static async Task<bool> IsSomeAndAsync<TValue>(this Option<TValue> self, Func<TValue, Task<bool>> predicate)
+        => self switch
+        {
+            { IsSome: true, Value: var value } => await predicate(value).ConfigureAwait(false),
+            _ => false
+        };
 
     public static async Task<bool> IsSomeAndAsync<TValue>(this Task<Option<TValue>> self, Func<TValue, Task<bool>> predicate)
         => await (await self).IsSomeAndAsync(predicate).ConfigureAwait(false);

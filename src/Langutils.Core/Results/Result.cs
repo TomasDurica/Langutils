@@ -33,7 +33,8 @@ public readonly record struct Result<TValue, TError>
     public bool IsSuccess { get; }
 
     [MemberNotNullWhen(false, nameof(Value))]
-    public bool IsError => !IsSuccess;
+    public bool IsError
+        => !IsSuccess;
 
     public TValue? Value { get; }
 

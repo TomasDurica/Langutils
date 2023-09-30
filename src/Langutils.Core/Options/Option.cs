@@ -32,11 +32,12 @@ public readonly record struct Option<TValue>
         Value = value;
     }
 
-    public static implicit operator Option<TValue>(TValue? value) => value switch
-    {
-        not null => new Option<TValue>(value),
-        _ => new Option<TValue>()
-    };
+    public static implicit operator Option<TValue>(TValue? value)
+        => value switch
+        {
+            not null => new Option<TValue>(value),
+            _ => new Option<TValue>()
+        };
 
     public static implicit operator Option<TValue>(None _) => new();
 

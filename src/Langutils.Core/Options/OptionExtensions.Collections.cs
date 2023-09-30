@@ -4,29 +4,32 @@ namespace Langutils.Core.Options;
 
 public static partial class OptionExtensions
 {
-    public static IEnumerable<TValue> AsEnumerable<TValue>(this Option<TValue> self) => self switch
-    {
-        { IsSome: true, Value: var value } => new [] { value },
-        _ => Enumerable.Empty<TValue>()
-    };
+    public static IEnumerable<TValue> AsEnumerable<TValue>(this Option<TValue> self)
+        => self switch
+        {
+            { IsSome: true, Value: var value } => new [] { value },
+            _ => Enumerable.Empty<TValue>()
+        };
 
     public static async Task<IEnumerable<TValue>> AsEnumerable<TValue>(this Task<Option<TValue>> self)
         => (await self).AsEnumerable();
 
-    public static List<TValue> ToList<TValue>(this Option<TValue> self) => self switch
-    {
-        { IsSome: true, Value: var value } => new List<TValue> { value },
-        _ => new List<TValue>()
-    };
+    public static List<TValue> ToList<TValue>(this Option<TValue> self)
+        => self switch
+        {
+            { IsSome: true, Value: var value } => new List<TValue> { value },
+            _ => new List<TValue>()
+        };
 
     public static async Task<List<TValue>> ToList<TValue>(this Task<Option<TValue>> self)
         => (await self).ToList();
 
-    public static TValue[] ToArray<TValue>(this Option<TValue> self) => self switch
-    {
-        { IsSome: true, Value: var value } => new [] { value },
-        _ => Array.Empty<TValue>()
-    };
+    public static TValue[] ToArray<TValue>(this Option<TValue> self)
+        => self switch
+        {
+            { IsSome: true, Value: var value } => new [] { value },
+            _ => Array.Empty<TValue>()
+        };
 
     public static async Task<TValue[]> ToArray<TValue>(this Task<Option<TValue>> self)
         => (await self).ToArray();
