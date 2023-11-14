@@ -30,7 +30,7 @@ public static partial class ResultExtensions
         => self switch
         {
             { IsSuccess: true, Value: var value } => value,
-            { Error: var error } => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Result.Error)}` value: {error}")
+            { Error: var error } => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Result)}.{nameof(Result.Error)}` value: {error}")
         };
 
     public static async Task<TValue> Unwrap<TValue, TError>(this Task<Result<TValue, TError>> self)
@@ -102,7 +102,7 @@ public static partial class ResultExtensions
         => self switch
         {
             { IsError: true, Error: var error } => error,
-            _ => throw new InvalidOperationException($"Called `{nameof(UnwrapError)}()` on a `{nameof(Result.Success)}` value")
+            { Value: var value } => throw new InvalidOperationException($"Called `{nameof(UnwrapError)}()` on a `{nameof(Result)}.{nameof(Result.Success)}` value: {value}")
         };
 
     public static async Task<TError?> UnwrapError<TValue, TError>(this Task<Result<TValue, TError>> self)

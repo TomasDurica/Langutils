@@ -18,7 +18,7 @@ public static partial class OptionExtensions
         => self switch
         {
             { IsSome: true, Value: var value } => value,
-            _ => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Option.None)}` value")
+            _ => throw new InvalidOperationException($"Called `{nameof(Unwrap)}()` on a `{nameof(Option)}.{nameof(Option.None)}` value")
         };
 
     public static async Task<TValue> Unwrap<TValue>(this Task<Option<TValue>> self)
