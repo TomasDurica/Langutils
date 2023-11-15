@@ -5,5 +5,8 @@
 /// </summary>
 public readonly record struct Unit
 {
+    /// <summary>
+    /// The only instance of the Unit type.
+    /// </summary>
     public static readonly Unit Instance = new();
 }
