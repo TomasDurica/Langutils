@@ -12,7 +12,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<IEnumerable<TValue>> AsEnumerable<TValue>(this Task<Option<TValue>> self)
-        => (await self).AsEnumerable();
+        => (await self.ConfigureAwait(false)).AsEnumerable();
 
     public static List<TValue> ToList<TValue>(this Option<TValue> self)
         => self switch
@@ -22,7 +22,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<List<TValue>> ToList<TValue>(this Task<Option<TValue>> self)
-        => (await self).ToList();
+        => (await self.ConfigureAwait(false)).ToList();
 
     public static TValue[] ToArray<TValue>(this Option<TValue> self)
         => self switch
@@ -32,7 +32,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<TValue[]> ToArray<TValue>(this Task<Option<TValue>> self)
-        => (await self).ToArray();
+        => (await self.ConfigureAwait(false)).ToArray();
 
     public static Option<List<TValue>> Collect<TValue>(this List<Option<TValue>> options)
     {
@@ -54,7 +54,7 @@ public static partial class OptionExtensions
     }
 
     public static async Task<Option<List<TValue>>> Collect<TValue>(this Task<List<Option<TValue>>> options)
-        => (await options).Collect();
+        => (await options.ConfigureAwait(false)).Collect();
 
     public static Option<TValue[]> Collect<TValue>(this Option<TValue>[] options)
     {
@@ -76,7 +76,7 @@ public static partial class OptionExtensions
     }
 
     public static async Task<Option<TValue[]>> Collect<TValue>(this Task<Option<TValue>[]> options)
-        => (await options).Collect();
+        => (await options.ConfigureAwait(false)).Collect();
 
     public static Option<IEnumerable<TValue>> Collect<TValue>(this IEnumerable<Option<TValue>> options)
     {
@@ -100,7 +100,7 @@ public static partial class OptionExtensions
     }
 
     public static async Task<Option<IEnumerable<TValue>>> Collect<TValue>(this Task<IEnumerable<Option<TValue>>> options)
-        => (await options).Collect();
+        => (await options.ConfigureAwait(false)).Collect();
 
     public static Option<TValue> Aggregate<TValue>(this IEnumerable<Option<TValue>> options, Func<TValue, TValue, TValue> selector)
     {
@@ -129,7 +129,7 @@ public static partial class OptionExtensions
     }
 
     public static async Task<Option<TValue>> Aggregate<TValue>(this Task<IEnumerable<Option<TValue>>> options, Func<TValue, TValue, TValue> selector)
-        => (await options).Aggregate(selector);
+        => (await options.ConfigureAwait(false)).Aggregate(selector);
 
     public static Option<TOut> Aggregate<TIn, TOut>(this IEnumerable<Option<TIn>> options, TOut seed, Func<TOut, TIn, TOut> selector)
     {
@@ -151,7 +151,7 @@ public static partial class OptionExtensions
     }
 
     public static async Task<Option<TOut>> Aggregate<TIn, TOut>(this Task<IEnumerable<Option<TIn>>> options, TOut seed, Func<TOut, TIn, TOut> selector)
-        => (await options).Aggregate(seed, selector);
+        => (await options.ConfigureAwait(false)).Aggregate(seed, selector);
 
     public static Option<TValue> Sum<TValue>(this IEnumerable<Option<TValue>> options)
         where TValue : INumber<TValue>
@@ -175,7 +175,7 @@ public static partial class OptionExtensions
 
     public static async Task<Option<TValue>> Sum<TValue>(this Task<IEnumerable<Option<TValue>>> options)
         where TValue : INumber<TValue>
-        => (await options).Sum();
+        => (await options.ConfigureAwait(false)).Sum();
 
     public static Option<TValue> Product<TValue>(this IEnumerable<Option<TValue>> options)
         where TValue : INumber<TValue>
@@ -199,6 +199,6 @@ public static partial class OptionExtensions
 
     public static async Task<Option<TValue>> Product<TValue>(this Task<IEnumerable<Option<TValue>>> options)
         where TValue : INumber<TValue>
-        => (await options).Product();
+        => (await options.ConfigureAwait(false)).Product();
 
 }

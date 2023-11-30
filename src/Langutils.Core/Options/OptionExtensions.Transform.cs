@@ -12,7 +12,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<TValue>> Filter<TValue>(this Task<Option<TValue>> self, Func<TValue, bool> predicate)
-        => (await self).Filter(predicate);
+        => (await self.ConfigureAwait(false)).Filter(predicate);
 
     public static async Task<Option<TValue>> FilterAsync<TValue>(this Option<TValue> self, Func<TValue, Task<bool>> predicate)
         => self switch
@@ -22,7 +22,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<TValue>> FilterAsync<TValue>(this Task<Option<TValue>> self, Func<TValue, Task<bool>> predicate)
-        => await (await self).FilterAsync(predicate).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).FilterAsync(predicate).ConfigureAwait(false);
 
     public static Option<TOut> Map<TIn, TOut>(this Option<TIn> self, Func<TIn, TOut> selector)
         => self switch
@@ -32,7 +32,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<TOut>> Map<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, TOut> selector)
-        => (await self).Map(selector);
+        => (await self.ConfigureAwait(false)).Map(selector);
 
     public static async Task<Option<TOut>> MapAsync<TIn, TOut>(this Option<TIn> self, Func<TIn, Task<TOut>> selector)
         => self switch
@@ -42,7 +42,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<TOut>> MapAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TIn, Task<TOut>> selector)
-        => await (await self).MapAsync(selector).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).MapAsync(selector).ConfigureAwait(false);
 
     public static TOut MapOr<TIn, TOut>(this Option<TIn> self, TOut defaultValue, Func<TIn, TOut> selector)
         => self switch
@@ -52,7 +52,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<TOut> MapOr<TIn, TOut>(this Task<Option<TIn>> self, TOut defaultValue, Func<TIn, TOut> selector)
-        => (await self).MapOr(defaultValue, selector);
+        => (await self.ConfigureAwait(false)).MapOr(defaultValue, selector);
 
     public static async Task<TOut> MapOrAsync<TIn, TOut>(this Option<TIn> self, TOut defaultValue, Func<TIn, Task<TOut>> selector)
         => self switch
@@ -62,7 +62,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<TOut> MapOrAsync<TIn, TOut>(this Task<Option<TIn>> self, TOut defaultValue, Func<TIn, Task<TOut>> selector)
-        => await (await self).MapOrAsync(defaultValue, selector).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).MapOrAsync(defaultValue, selector).ConfigureAwait(false);
 
     public static TOut MapOrElse<TIn, TOut>(this Option<TIn> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector)
         => self switch
@@ -72,7 +72,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<TOut> MapOrElse<TIn, TOut>(this Task<Option<TIn>> self, Func<TOut> defaultValueProvider, Func<TIn, TOut> selector)
-        => (await self).MapOrElse(defaultValueProvider, selector);
+        => (await self.ConfigureAwait(false)).MapOrElse(defaultValueProvider, selector);
 
     public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Option<TIn> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
         => self switch
@@ -82,7 +82,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<TOut> defaultValueProvider, Func<TIn, Task<TOut>> selector)
-        => await (await self).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
 
     public static Result<TValue, TError> SomeOr<TValue, TError>(this Option<TValue> self, TError error)
         => self switch
@@ -92,7 +92,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Result<TValue, TError>> SomeOr<TValue, TError>(this Task<Option<TValue>> self, TError error)
-        => (await self).SomeOr(error);
+        => (await self.ConfigureAwait(false)).SomeOr(error);
 
     public static Result<TValue, TError> SomeOrElse<TValue, TError>(this Option<TValue> self, Func<TError> errorProvider)
         => self switch
@@ -102,7 +102,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Result<TValue, TError>> SomeOrElse<TValue, TError>(this Task<Option<TValue>> self, Func<TError> errorProvider)
-        => (await self).SomeOrElse(errorProvider);
+        => (await self.ConfigureAwait(false)).SomeOrElse(errorProvider);
 
     public static async Task<Result<TValue, TError>> SomeOrElseAsync<TValue, TError>(this Option<TValue> self, Func<Task<TError>> errorProvider)
         => self switch
@@ -112,7 +112,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Result<TValue, TError>> SomeOrElseAsync<TValue, TError>(this Task<Option<TValue>> self, Func<Task<TError>> errorProvider)
-        => await (await self).SomeOrElseAsync(errorProvider).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).SomeOrElseAsync(errorProvider).ConfigureAwait(false);
 
     public static Result<Option<TValue>, TError> Transpose<TValue, TError>(this Option<Result<TValue, TError>> self)
         => self switch
@@ -123,7 +123,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Result<Option<TValue>, TError>> Transpose<TValue, TError>(this Task<Option<Result<TValue, TError>>> self)
-        => (await self).Transpose();
+        => (await self.ConfigureAwait(false)).Transpose();
 
     public static Option<TValue> Flatten<TValue>(this Option<Option<TValue>> self)
         => self switch
@@ -133,7 +133,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<TValue>> Flatten<TValue>(this Task<Option<Option<TValue>>> self)
-        => (await self).Flatten();
+        => (await self.ConfigureAwait(false)).Flatten();
 
     public static Option<(TValue1 Left, TValue2 Right)> Zip<TValue1, TValue2>(this Option<TValue1> self, Option<TValue2> option)
         => (self, option) switch
@@ -143,7 +143,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<(TLeft Left, TRight Right)>> Zip<TLeft, TRight>(this Task<Option<TLeft>> self, Option<TRight> option)
-        => (await self).Zip(option);
+        => (await self.ConfigureAwait(false)).Zip(option);
 
     public static Option<TOut> ZipWith<TIn1, TIn2, TOut>(this Option<TIn1> self, Option<TIn2> option, Func<TIn1, TIn2, TOut> selector)
         => (self, option) switch
@@ -153,7 +153,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<TOut>> ZipWith<TLeft, TRight, TOut>(this Task<Option<TLeft>> self, Option<TRight> option, Func<TLeft, TRight, TOut> selector)
-        => (await self).ZipWith(option, selector);
+        => (await self.ConfigureAwait(false)).ZipWith(option, selector);
 
     public static async Task<Option<TOut>> ZipWithAsync<TIn1, TIn2, TOut>(this Option<TIn1> self, Option<TIn2> option, Func<TIn1, TIn2, Task<TOut>> selector)
         => (self, option) switch
@@ -163,7 +163,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<Option<TOut>> ZipWithAsync<TIn1, TIn2, TOut>(this Task<Option<TIn1>> self, Option<TIn2> option, Func<TIn1, TIn2, Task<TOut>> selector)
-        => await (await self).ZipWithAsync(option, selector).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).ZipWithAsync(option, selector).ConfigureAwait(false);
 
     public static (Option<TValue1> Left, Option<TValue2> Right) Unzip<TValue1, TValue2>(this Option<(TValue1 Left, TValue2 Right)> self)
         => self switch
@@ -173,5 +173,5 @@ public static partial class OptionExtensions
         };
 
     public static async Task<(Option<TLeft> Left, Option<TRight> Right)> Unzip<TLeft, TRight>(this Task<Option<(TLeft Left, TRight Right)>> self)
-        => (await self).Unzip();
+        => (await self.ConfigureAwait(false)).Unzip();
 }

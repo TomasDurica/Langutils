@@ -1,3 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
+using Langutils.Benchmarks;
 
-BenchmarkRunner.Run<AggregateBenchmarks>();
+BenchmarkRunner.Run<PackageMethodComparisonBenchmarks>();

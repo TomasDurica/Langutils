@@ -10,7 +10,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<bool> IsSomeAnd<TValue>(this Task<Option<TValue>> self, Func<TValue, bool> predicate)
-        => (await self).IsSomeAnd(predicate);
+        => (await self.ConfigureAwait(false)).IsSomeAnd(predicate);
 
     public static async Task<bool> IsSomeAndAsync<TValue>(this Option<TValue> self, Func<TValue, Task<bool>> predicate)
         => self switch
@@ -20,7 +20,7 @@ public static partial class OptionExtensions
         };
 
     public static async Task<bool> IsSomeAndAsync<TValue>(this Task<Option<TValue>> self, Func<TValue, Task<bool>> predicate)
-        => await (await self).IsSomeAndAsync(predicate).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).IsSomeAndAsync(predicate).ConfigureAwait(false);
 
     public static Option<TValue> Tap<TValue>(this Option<TValue> self, Action<TValue> onSome)
     {
@@ -33,7 +33,7 @@ public static partial class OptionExtensions
     }
 
     public static async Task<Option<TValue>> Tap<TValue>(this Task<Option<TValue>> self, Action<TValue> onSome)
-        => (await self).Tap(onSome);
+        => (await self.ConfigureAwait(false)).Tap(onSome);
 
     public static async Task<Option<TValue>> TapAsync<TValue>(this Option<TValue> self, Func<TValue, Task> onSome)
     {
@@ -46,5 +46,5 @@ public static partial class OptionExtensions
     }
 
     public static async Task<Option<TValue>> TapAsync<TValue>(this Task<Option<TValue>> self, Func<TValue, Task> onSome)
-        => await (await self).TapAsync(onSome).ConfigureAwait(false);
+        => await (await self.ConfigureAwait(false)).TapAsync(onSome).ConfigureAwait(false);
 }
