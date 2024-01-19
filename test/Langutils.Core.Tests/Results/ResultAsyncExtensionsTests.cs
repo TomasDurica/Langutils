@@ -125,6 +125,186 @@ public class ResultAsyncExtensionsTests
     }
 
     [Fact]
+    public async Task FilterOrAsync_OnSuccessWithPredicateTrue_ReturnsSuccess()
+    {
+        var result = await Success.FilterOrAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return Task.FromResult(true);
+        }, Error);
+
+        AssertResult.Success(Value, result);
+    }
+
+    [Fact]
+    public async Task FilterOrAsync_OnSuccessWithPredicateFalse_ReturnsError()
+    {
+        var result = await Success.FilterOrAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return Task.FromResult(false);
+        }, ErrorMessage);
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public async Task FilterOrAsync_OnError_ReturnsError()
+    {
+        var result = await Error.FilterOrAsync(_ =>
+        {
+            Assert.Fail();
+            return Task.FromResult(true);
+        }, OtherErrorMessage);
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnSuccessWithPredicateTaskTrue_ReturnsSuccess()
+    {
+        var result = await Success.FilterOrElseAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return Task.FromResult(true);
+        }, _ =>
+        {
+            Assert.Fail();
+            return ErrorMessage;
+        });
+
+        AssertResult.Success(Value, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnSuccessWithPredicateTaskFalse_ReturnsError()
+    {
+        var result = await Success.FilterOrElseAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return Task.FromResult(false);
+        }, v =>
+        {
+            Assert.Equal(Value, v);
+            return ErrorMessage;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnErrorWithPredicateTask_ReturnsError()
+    {
+        var result = await Error.FilterOrElseAsync(v =>
+        {
+            Assert.Fail();
+            return Task.FromResult(false);
+        }, v =>
+        {
+            Assert.Fail();
+            return OtherErrorMessage;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnSuccessWithPredicateTrueAndErrorProviderTask_ReturnsSuccess()
+    {
+        var result = await Success.FilterOrElseAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return true;
+        }, _ =>
+        {
+            Assert.Fail();
+            return TaskErrorMessage;
+        });
+
+        AssertResult.Success(Value, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnSuccessWithPredicateFalseAndErrorProviderTask_ReturnsError()
+    {
+        var result = await Success.FilterOrElseAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return false;
+        }, v =>
+        {
+            Assert.Equal(Value, v);
+            return TaskErrorMessage;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnErrorAndErrorProviderTask_ReturnsError()
+    {
+        var result = await Error.FilterOrElseAsync(v =>
+        {
+            Assert.Fail();
+            return false;
+        }, v =>
+        {
+            Assert.Fail();
+            return TaskOtherErrorMessage;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnSuccessWithPredicateTaskTrueAndErrorProviderTask_ReturnsSuccess()
+    {
+        var result = await Success.FilterOrElseAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return Task.FromResult(true);
+        }, _ =>
+        {
+            Assert.Fail();
+            return TaskErrorMessage;
+        });
+
+        AssertResult.Success(Value, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnSuccessWithPredicateTaskFalseAndErrorProviderTask_ReturnsError()
+    {
+        var result = await Success.FilterOrElseAsync(v =>
+        {
+            Assert.Equal(Value, v);
+            return Task.FromResult(false);
+        }, v =>
+        {
+            Assert.Equal(Value, v);
+            return TaskErrorMessage;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public async Task FilterOrElseAsync_OnErrorWithPredicateAndErrorProviderTask_ReturnsError()
+    {
+        var result = await Error.FilterOrElseAsync(v =>
+        {
+            Assert.Fail();
+            return Task.FromResult(false);
+        }, v =>
+        {
+            Assert.Fail();
+            return TaskOtherError;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
     public async Task MapAsync_OnSuccess_ReturnsSuccess()
     {
         var result = await Success.MapAsync(_ => TaskOtherValue);

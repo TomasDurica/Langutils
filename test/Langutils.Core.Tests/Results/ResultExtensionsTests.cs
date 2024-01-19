@@ -324,6 +324,86 @@ public class ResultExtensionsTests
     }
 
     [Fact]
+    public void FilterOr_OnSuccessWithPredicateTrue_ReturnsSuccess()
+    {
+        var result = Success.FilterOr(v =>
+        {
+            Assert.Equal(Value, v);
+            return true;
+        }, Error);
+
+        AssertResult.Success(Value, result);
+    }
+
+    [Fact]
+    public void FilterOr_OnSuccessWithPredicateFalse_ReturnsError()
+    {
+        var result = Success.FilterOr(v =>
+        {
+            Assert.Equal(Value, v);
+            return false;
+        }, ErrorMessage);
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public void FilterOr_OnError_ReturnsError()
+    {
+        var result = Error.FilterOr(_ =>
+        {
+            Assert.Fail();
+            return true;
+        }, OtherErrorMessage);
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public void FilterOrElse_OnSuccessWithPredicateTrue_ReturnsSuccess()
+    {
+        var result = Success.FilterOrElse(v =>
+        {
+            Assert.Equal(Value, v);
+            return true;
+        }, _ => ErrorMessage);
+
+        AssertResult.Success(Value, result);
+    }
+
+    [Fact]
+    public void FilterOrElse_OnSuccessWithPredicateFalse_ReturnsError()
+    {
+        var result = Success.FilterOrElse(v =>
+        {
+            Assert.Equal(Value, v);
+            return false;
+        }, v =>
+        {
+            Assert.Equal(Value, v);
+            return ErrorMessage;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
+    public void FilterOrElse_OnError_ReturnsError()
+    {
+        var result = Error.FilterOrElse(v =>
+        {
+            Assert.Fail();
+            return false;
+        }, v =>
+        {
+            Assert.Fail();
+            return OtherErrorMessage;
+        });
+
+        AssertResult.Error(ErrorMessage, result);
+    }
+
+    [Fact]
     public void Map_OnSuccess_ReturnsSuccess()
     {
         var result = Success.Map(v => v);

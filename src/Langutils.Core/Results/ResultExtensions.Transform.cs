@@ -5,6 +5,180 @@ namespace Langutils.Core.Results;
 public static partial class ResultExtensions
 {
     /// <summary>
+    /// Filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="error">The error to return if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Result that contains the value if it matches the predicate, otherwise a failure with the provided error.</returns>
+    public static Result<TValue, TError> FilterOr<TValue, TError>(this Result<TValue, TError> self, Func<TValue, bool> predicate, TError error)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } when predicate(value) => self,
+            { IsSuccess: true } => error,
+            { Error: var currentError } => currentError!,
+        };
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Task of Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="error">The error to return if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the provided error.</returns>
+    public static async Task<Result<TValue, TError>> FilterOr<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, bool> predicate, TError error)
+        => (await self.ConfigureAwait(false)).FilterOr(predicate, error);
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="error">The error to return if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the provided error.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrAsync<TValue, TError>(this Result<TValue, TError> self, Func<TValue, Task<bool>> predicate, TError error)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } when await predicate(value).ConfigureAwait(false) => self,
+            { IsSuccess: true } => error,
+            { Error: var currentError } => currentError!,
+        };
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Task of Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="error">The error to return if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the provided error.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrAsync<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, Task<bool>> predicate, TError error)
+        => await (await self.ConfigureAwait(false)).FilterOrAsync(predicate, error).ConfigureAwait(false);
+
+    /// <summary>
+    /// Filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static Result<TValue, TError> FilterOrElse<TValue, TError>(this Result<TValue, TError> self, Func<TValue, bool> predicate, Func<TValue, TError> errorProvider)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } when predicate(value) => self,
+            { IsSuccess: true, Value: var value } => errorProvider(value),
+            { Error: var currentError } => currentError!,
+        };
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Task of Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrElse<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, bool> predicate, Func<TValue, TError> errorProvider)
+        => (await self.ConfigureAwait(false)).FilterOrElse(predicate, errorProvider);
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrElseAsync<TValue, TError>(this Result<TValue, TError> self, Func<TValue, Task<bool>> predicate, Func<TValue, TError> errorProvider)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } when await predicate(value).ConfigureAwait(false) => self,
+            { IsSuccess: true, Value: var value } => errorProvider(value),
+            { Error: var currentError } => currentError!,
+        };
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Task of Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrElseAsync<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, Task<bool>> predicate, Func<TValue, TError> errorProvider)
+        => await (await self.ConfigureAwait(false)).FilterOrElseAsync(predicate, errorProvider).ConfigureAwait(false);
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrElseAsync<TValue, TError>(this Result<TValue, TError> self, Func<TValue, bool> predicate, Func<TValue, Task<TError>> errorProvider)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } when predicate(value) => self,
+            { IsSuccess: true, Value: var value } => await errorProvider(value).ConfigureAwait(false),
+            { Error: var currentError } => currentError!,
+        };
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Task of Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrElseAsync<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, bool> predicate, Func<TValue, Task<TError>> errorProvider)
+        => await (await self.ConfigureAwait(false)).FilterOrElseAsync(predicate, errorProvider).ConfigureAwait(false);
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrElseAsync<TValue, TError>(this Result<TValue, TError> self, Func<TValue, Task<bool>> predicate, Func<TValue, Task<TError>> errorProvider)
+        => self switch
+        {
+            { IsSuccess: true, Value: var value } when await predicate(value).ConfigureAwait(false) => self,
+            { IsSuccess: true, Value: var value } => await errorProvider(value).ConfigureAwait(false),
+            { Error: var currentError } => currentError!,
+        };
+
+    /// <summary>
+    /// Asynchronously filters the Result based on a predicate.
+    /// </summary>
+    /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
+    /// <typeparam name="TError">The type of the error in the Result.</typeparam>
+    /// <param name="self">The Task of Result to filter.</param>
+    /// <param name="predicate">The predicate to use for filtering.</param>
+    /// <param name="errorProvider">A function that provides the error if the Result is a success but does not match the predicate.</param>
+    /// <returns>A Task of a Result that contains the value if it matches the predicate, otherwise a failure with the error provided by the errorProvider function.</returns>
+    public static async Task<Result<TValue, TError>> FilterOrElseAsync<TValue, TError>(this Task<Result<TValue, TError>> self, Func<TValue, Task<bool>> predicate, Func<TValue, Task<TError>> errorProvider)
+        => await (await self.ConfigureAwait(false)).FilterOrElseAsync(predicate, errorProvider).ConfigureAwait(false);
+
+    /// <summary>
     /// Transforms the value in a successful Result using the provided function.
     /// </summary>
     /// <param name="self">The Result to transform.</param>
