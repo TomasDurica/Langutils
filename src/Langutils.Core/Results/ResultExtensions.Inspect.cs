@@ -107,13 +107,13 @@ public static partial class ResultExtensions
         => await (await self.ConfigureAwait(false)).IsErrorAndAsync(predicate).ConfigureAwait(false);
 
     /// <summary>
-    /// Asynchronously checks if the Result is a failure and if the provided asynchronous predicate returns true for the error of the Result.
+    /// Performs the provided action on the value of a successful Result.
     /// </summary>
-    /// <param name="self">The Task of Result to check.</param>
-    /// <param name="predicate">The asynchronous predicate to apply to the error of the Result.</param>
+    /// <param name="self">The Task of Result to perform the action on.</param>
+    /// <param name="onSuccess">The action to perform on the value of the Result.</param>
     /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
     /// <typeparam name="TError">The type of the error in the Result.</typeparam>
-    /// <returns>A Task of bool representing if the Result is a failure and the predicate returns true for its error.</returns>
+    /// <returns>A Task of the original Result.</returns>
     public static Result<TValue, TError> Tap<TValue, TError>(this Result<TValue, TError> self, Action<TValue> onSuccess)
     {
         if (self is { IsSuccess: true, Value: var value })
