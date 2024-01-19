@@ -21,6 +21,28 @@ public static class Option
     /// <typeparam name="TValue">The Value type</typeparam>
     /// <returns></returns>
     public static Option<TValue> None<TValue>() => new();
+
+    /// <summary>
+    /// Creates a new option
+    /// </summary>
+    /// <returns>
+    /// `Some(value)` when value is not null
+    /// `None` when value is null
+    /// </returns>
+    public static Option<TValue> From<TValue>(TValue? value) where TValue: struct => value switch
+    {
+        not null => new Option<TValue>(value.Value),
+        _ => new Option<TValue>()
+    };
+
+    /// <summary>
+    /// Creates a new option
+    /// </summary>
+    /// <returns>
+    /// `Some(value)` when value is not null
+    /// `None` when value is null
+    /// </returns>
+    public static Option<TValue> From<TValue>(TValue? value) where TValue: class => value;
 }
 
 /// <summary>

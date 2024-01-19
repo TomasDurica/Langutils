@@ -49,4 +49,36 @@ public class OptionTests
 
         AssertOption.None(option);
     }
+
+    [Fact]
+    public void From_FromNullClass_ReturnsNone()
+    {
+        var option = Option.From<object>(null);
+
+        AssertOption.None(option);
+    }
+
+    [Fact]
+    public void From_FromValueClass_ReturnsSome()
+    {
+        var option = Option.From(Value);
+
+        AssertOption.Some(Value, option);
+    }
+
+    [Fact]
+    public void From_FromNullStruct_ReturnsNone()
+    {
+        var option = Option.From<long>(null);
+
+        AssertOption.None(option);
+    }
+
+    [Fact]
+    public void From_FromValueStruct_ReturnsSome()
+    {
+        var option = Option.From<long>(1);
+
+        AssertOption.Some(1, option);
+    }
 }
