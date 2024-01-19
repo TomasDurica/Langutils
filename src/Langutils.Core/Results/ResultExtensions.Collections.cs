@@ -16,7 +16,6 @@ public static partial class ResultExtensions
             _ => Enumerable.Empty<TValue>()
         };
 
-
     /// <summary>
     /// Asynchronously converts the Result to an enumerable containing the value if the Result is a success, or an empty enumerable if the Result is a failure.
     /// </summary>

@@ -9,10 +9,12 @@ public static partial class ResultExtensions
     /// <param name="option">The Result to compare with the current Result.</param>
     /// <typeparam name="TValue">The type of the value in the Result.</typeparam>
     /// <typeparam name="TError">The type of the error in the Result.</typeparam>
-    /// <returns>A value that indicates the relative order of the objects being compared. The return value has these meanings:
+    /// <returns>
+    /// A value that indicates the relative order of the objects being compared. The return value has these meanings:
     /// Less than zero: This object is less than the other parameter.
     /// Zero: This object is equal to other.
-    /// Greater than zero: This object is greater than other.</returns>
+    /// Greater than zero: This object is greater than other.
+    /// </returns>
     public static int CompareTo<TValue, TError>(this Result<TValue, TError> self, Result<TValue, TError> option)
         where TValue: IComparable<TValue>
         => (self, option) switch
