@@ -50,6 +50,9 @@ public static class Option
 /// </summary>
 public readonly record struct None
 {
+    /// <summary>
+    /// The singleton instance of None.
+    /// </summary>
     public static readonly None Instance = new();
 }
 

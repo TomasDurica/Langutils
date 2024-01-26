@@ -51,20 +51,14 @@ public static class Result
 /// </summary>
 /// <param name="Value">The underlying Value</param>
 /// <typeparam name="TValue">The Value type</typeparam>
-public readonly record struct Success<TValue>(TValue Value)
-{
-    public Result<TValue, TError> ToResult<TError>() => new(Value);
-};
+public readonly record struct Success<TValue>(TValue Value);
 
 /// <summary>
-/// This type is used to represent an error in ambiguous cases - e.g. when you want to return `Result&gt;T, T&lt`;.
+/// This type is used to represent an error in ambiguous cases - e.g. when you want to return `Result&gt;T, T&lt;`;.
 /// </summary>
 /// <param name="ErrorValue">The underlying error</param>
 /// <typeparam name="TError">The Error type</typeparam>
-public readonly record struct Error<TError>(TError ErrorValue)
-{
-    public Result<TValue, TError> ToResult<TValue>() => new(ErrorValue);
-}
+public readonly record struct Error<TError>(TError ErrorValue);
 
 /// <summary>
 /// A type that represents either a value or an error. It is similar to `Either` or `Result` in functional languages.
@@ -135,13 +129,13 @@ public readonly record struct Result<TValue, TError>
     /// Creates a new result with a value.
     /// </summary>
     public static implicit operator Result<TValue, TError>(Success<TValue> success)
-        => success.ToResult<TError>();
+        => new(success.Value);
 
     /// <summary>
     /// Creates a new result with an error.
     /// </summary>
     public static implicit operator Result<TValue, TError>(Error<TError> error)
-        => error.ToResult<TValue>();
+        => new(error.ErrorValue);
 
     /// <returns>
     /// "Result.Success({Value})" when <see cref="IsSuccess"/> is true.
