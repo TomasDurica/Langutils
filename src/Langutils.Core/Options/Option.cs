@@ -57,6 +57,25 @@ public readonly record struct None
 }
 
 /// <summary>
+/// This type is used to represent Some in ambiguous cases.
+/// </summary>
+public readonly record struct Some<TValue>(TValue Value);
+
+/// <summary>
+/// This type is used to simplify the creation of Some options.
+/// </summary>
+public static class Some
+{
+    /// <summary>
+    /// Creates a new some option.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns></returns>
+    public static Some<TValue> From<TValue>(TValue value) => new(value);
+}
+
+/// <summary>
 /// A type that represents either a value or nothing. It is similar to `Option` in functional languages.
 /// </summary>
 /// <typeparam name="TValue">The Value type</typeparam>
@@ -117,6 +136,11 @@ public readonly record struct Option<TValue>
     /// Creates a new option `None`.
     /// </summary>
     public static implicit operator Option<TValue>(None _) => new();
+
+    /// <summary>
+    /// Creates a new option `Some`.
+    /// </summary>
+    public static implicit operator Option<TValue>(Some<TValue> some) => new(some.Value);
 
     /// <returns>
     /// "Option.Some({Value})" when <see cref="IsSome"/> is true.

@@ -54,11 +54,39 @@ public static class Result
 public readonly record struct Success<TValue>(TValue Value);
 
 /// <summary>
+/// This type is used to simplify the creation of Success results.
+/// </summary>
+public static class Success
+{
+    /// <summary>
+    /// Creates a new success.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <typeparam name="TValue"></typeparam>
+    /// <returns></returns>
+    public static Success<TValue> From<TValue>(TValue value) => new(value);
+}
+
+/// <summary>
 /// This type is used to represent an error in ambiguous cases - e.g. when you want to return `Result&gt;T, T&lt;`;.
 /// </summary>
 /// <param name="ErrorValue">The underlying error</param>
 /// <typeparam name="TError">The Error type</typeparam>
 public readonly record struct Error<TError>(TError ErrorValue);
+
+/// <summary>
+/// This type is used to simplify the creation of Error results.
+/// </summary>
+public static class Error
+{
+    /// <summary>
+    /// Creates a new error.
+    /// </summary>
+    /// <param name="error"></param>
+    /// <typeparam name="TError"></typeparam>
+    /// <returns></returns>
+    public static Error<TError> From<TError>(TError error) => new(error);
+}
 
 /// <summary>
 /// A type that represents either a value or an error. It is similar to `Either` or `Result` in functional languages.
