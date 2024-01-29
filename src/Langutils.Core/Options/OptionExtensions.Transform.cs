@@ -217,6 +217,62 @@ public static partial class OptionExtensions
         => await (await self.ConfigureAwait(false)).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
 
     /// <summary>
+    /// Asynchronously transforms the value in the Option using a selector function or returns the result of a default value provider.
+    /// </summary>
+    /// <typeparam name="TIn">The type of the input value in the Option.</typeparam>
+    /// <typeparam name="TOut">The type of the output value in the Option.</typeparam>
+    /// <param name="self">The Option to transform.</param>
+    /// <param name="defaultValueProvider">A function that provides the default value.</param>
+    /// <param name="selector">The function to transform the value.</param>
+    /// <returns>A Task of an Option that contains the transformed value if the original Option is Some, otherwise the result of the default value provider.</returns>
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Option<TIn> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
+        => self switch
+        {
+            { IsSome: true, Value: var value } => selector(value),
+            _ => await defaultValueProvider().ConfigureAwait(false)
+        };
+
+    /// <summary>
+    /// Transforms the value in the Option using a selector function or returns the result of a default value provider.
+    /// </summary>
+    /// <typeparam name="TIn">The type of the input value in the Option.</typeparam>
+    /// <typeparam name="TOut">The type of the output value in the Option.</typeparam>
+    /// <param name="self">The Option to transform.</param>
+    /// <param name="defaultValueProvider">A function that provides the default value.</param>
+    /// <param name="selector">The function to transform the value.</param>
+    /// <returns>A Task of an Option that contains the transformed value if the original Option is Some, otherwise the result of the default value provider.</returns>
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, TOut> selector)
+        => await (await self.ConfigureAwait(false)).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
+
+    /// <summary>
+    /// Asynchronously transforms the value in the Option using a selector function or returns the result of a default value provider.
+    /// </summary>
+    /// <typeparam name="TIn">The type of the input value in the Option.</typeparam>
+    /// <typeparam name="TOut">The type of the output value in the Option.</typeparam>
+    /// <param name="self">The Option to transform.</param>
+    /// <param name="defaultValueProvider">A function that provides the default value.</param>
+    /// <param name="selector">The function to transform the value.</param>
+    /// <returns>A Task of an Option that contains the transformed value if the original Option is Some, otherwise the result of the default value provider.</returns>
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Option<TIn> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+        => self switch
+        {
+            { IsSome: true, Value: var value } => await selector(value).ConfigureAwait(false),
+            _ => await defaultValueProvider().ConfigureAwait(false)
+        };
+
+    /// <summary>
+    /// Transforms the value in the Option using a selector function or returns the result of a default value provider.
+    /// </summary>
+    /// <typeparam name="TIn">The type of the input value in the Option.</typeparam>
+    /// <typeparam name="TOut">The type of the output value in the Option.</typeparam>
+    /// <param name="self">The Option to transform.</param>
+    /// <param name="defaultValueProvider">A function that provides the default value.</param>
+    /// <param name="selector">The function to transform the value.</param>
+    /// <returns>A Task of an Option that contains the transformed value if the original Option is Some, otherwise the result of the default value provider.</returns>
+    public static async Task<TOut> MapOrElseAsync<TIn, TOut>(this Task<Option<TIn>> self, Func<Task<TOut>> defaultValueProvider, Func<TIn, Task<TOut>> selector)
+        => await (await self.ConfigureAwait(false)).MapOrElseAsync(defaultValueProvider, selector).ConfigureAwait(false);
+
+    /// <summary>
     /// Transforms the Option into a Result, using the provided error if the Option is None.
     /// </summary>
     /// <typeparam name="TValue">The type of the value in the Option.</typeparam>

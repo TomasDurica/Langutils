@@ -174,6 +174,60 @@ public class TaskOptionAsyncExtensionsTests
     }
 
     [Fact]
+    public async Task MapOrElseAsync2_OnSome_ReturnsSome()
+    {
+        var result = await TaskSome.MapOrElseAsync(() => TaskOtherValue, value => value);
+
+        AssertOption.Some(Value, result);
+    }
+
+    [Fact]
+    public async Task MapOrElseAsync2_OnSome_DoesNotCallDefaultValueProvider()
+    {
+        var defaultValueProvider = Substitute.For<Func<Task<object>>>();
+        defaultValueProvider.Invoke().Returns(TaskOtherValue);
+
+        await TaskSome.MapOrElseAsync(defaultValueProvider, value => value);
+
+        Assert.Empty(defaultValueProvider.ReceivedCalls());
+    }
+
+    [Fact]
+    public async Task MapOrElseAsync2_OnNone_ReturnsDefaultValue()
+    {
+        var result = await TaskNone.MapOrElseAsync(() => TaskValue, value => value);
+
+        AssertOption.Some(Value, result);
+    }
+
+    [Fact]
+    public async Task MapOrElseAsync3_OnSome_ReturnsSome()
+    {
+        var result = await TaskSome.MapOrElseAsync(() => TaskOtherValue, Task.FromResult);
+
+        AssertOption.Some(Value, result);
+    }
+
+    [Fact]
+    public async Task MapOrElseAsync3_OnSome_DoesNotCallDefaultValueProvider()
+    {
+        var defaultValueProvider = Substitute.For<Func<Task<object>>>();
+        defaultValueProvider.Invoke().Returns(TaskOtherValue);
+
+        await TaskSome.MapOrElseAsync(defaultValueProvider, Task.FromResult);
+
+        Assert.Empty(defaultValueProvider.ReceivedCalls());
+    }
+
+    [Fact]
+    public async Task MapOrElseAsync3_OnNone_ReturnsDefaultValue()
+    {
+        var result = await TaskNone.MapOrElseAsync(() => TaskValue, Task.FromResult);
+
+        AssertOption.Some(Value, result);
+    }
+
+    [Fact]
     public async Task SomeOrElseAsync_OnSome_ReturnsSome()
     {
         var result = await TaskSome.SomeOrElseAsync(() => TaskOtherValue);
