@@ -5,7 +5,7 @@ namespace Langutils.Core.Results;
 /// <summary>
 /// This type is used to create results.
 /// </summary>
-public static class Result
+public static partial class Result
 {
     /// <summary>
     /// Returns a success result with a value.

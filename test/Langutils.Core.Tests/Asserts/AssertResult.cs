@@ -15,4 +15,10 @@ public static class AssertResult
         Assert.True(actual.IsError);
         Assert.Equal(expectedError, actual.UnwrapError());
     }
+
+    public static void Error<TValue, TError>(Func<TError?, bool> errorPredicate, Result<TValue, TError> actual)
+    {
+        Assert.True(actual.IsError);
+        Assert.True(errorPredicate(actual.UnwrapError()));
+    }
 }
