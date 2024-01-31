@@ -958,6 +958,7 @@ public class OptionExtensionsTests
 
         AssertOption.Some(1, result);
     }
+#if NET7_0_OR_GREATER
 
     [Fact]
     public void Sum_OnAllSome_ReturnsSomeWithSum()
@@ -1082,4 +1083,5 @@ public class OptionExtensionsTests
 
         AssertOption.Some(1, result);
     }
+#endif
 }

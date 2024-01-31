@@ -62,9 +62,9 @@ public static partial class Result
         {
             return func();
         }
-        catch (Exception e) when (e.GetType().IsAssignableTo(typeof(TException)))
+        catch (Exception e) when (e is TException exception)
         {
-            return (TException)e;
+            return exception;
         }
     }
 
@@ -86,9 +86,9 @@ public static partial class Result
         {
             return await func().ConfigureAwait(false);
         }
-        catch (Exception e) when (e.GetType().IsAssignableTo(typeof(TException)))
+        catch (Exception e) when (e is TException exception)
         {
-            return (TException)e;
+            return exception;
         }
     }
 
@@ -152,9 +152,9 @@ public static partial class Result
             action();
             return Unit.Instance;
         }
-        catch (Exception e) when (e.GetType().IsAssignableTo(typeof(TException)))
+        catch (Exception e) when (e is TException exception)
         {
-            return (TException)e;
+            return exception;
         }
     }
 
@@ -176,9 +176,9 @@ public static partial class Result
             await action().ConfigureAwait(false);
             return Unit.Instance;
         }
-        catch (Exception e) when (e.GetType().IsAssignableTo(typeof(TException)))
+        catch (Exception e) when (e is TException exception)
         {
-            return (TException)e;
+            return exception;
         }
     }
 }

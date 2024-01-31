@@ -155,9 +155,13 @@ public static partial class ResultExtensions
     /// <returns>A Result of an enumerable containing the values of the successful Results, or the first error if any Result is a failure.</returns>
     public static Result<IEnumerable<TValue>, TError> Collect<TValue, TError>(this IEnumerable<Result<TValue, TError>> results)
     {
+#if NET6_0_OR_GREATER
         var collection = results.TryGetNonEnumeratedCount(out var count)
             ? new List<TValue>(count)
-            : new List<TValue>();
+            : [];
+#else
+        var collection = new List<TValue>();
+#endif
 
         foreach (var result in results)
         {

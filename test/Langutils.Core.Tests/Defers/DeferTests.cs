@@ -32,6 +32,7 @@ public class DeferTests
         Assert.Single(onDispose.ReceivedCalls());
         Assert.True(onDispose.ReceivedCalls().All(call => call.GetArguments().Single() == context));
     }
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
 
     [Fact]
     public async Task DeferAsync_WhenDisposed_ShouldCallOnDispose()
@@ -60,4 +61,5 @@ public class DeferTests
         Assert.Single(onDispose.ReceivedCalls());
         Assert.True(onDispose.ReceivedCalls().All(call => call.GetArguments().Single() == context));
     }
+#endif
 }

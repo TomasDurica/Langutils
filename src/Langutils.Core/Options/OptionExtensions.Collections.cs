@@ -146,9 +146,13 @@ public static partial class OptionExtensions
     /// <returns>An Option of an enumerable containing the values if all Options have values, otherwise None.</returns>
     public static Option<IEnumerable<TValue>> Collect<TValue>(this IEnumerable<Option<TValue>> options)
     {
+#if NET6_0_OR_GREATER
         var result = options.TryGetNonEnumeratedCount(out var count)
             ? new List<TValue>(count)
-            : new List<TValue>();
+            : [];
+#else
+        var result = new List<TValue>();
+#endif
 
         foreach (var option in options)
         {
@@ -257,6 +261,8 @@ public static partial class OptionExtensions
     public static async Task<Option<TOut>> Aggregate<TIn, TOut>(this Task<IEnumerable<Option<TIn>>> options, TOut seed, Func<TOut, TIn, TOut> selector)
         => (await options.ConfigureAwait(false)).Aggregate(seed, selector);
 
+#if NET7_0_OR_GREATER
+
     /// <summary>
     /// Sums the values from an enumerable of Options.
     /// </summary>
@@ -328,4 +334,6 @@ public static partial class OptionExtensions
     public static async Task<Option<TValue>> Product<TValue>(this Task<IEnumerable<Option<TValue>>> options)
         where TValue : INumber<TValue>
         => (await options.ConfigureAwait(false)).Product();
+
+#endif
 }
